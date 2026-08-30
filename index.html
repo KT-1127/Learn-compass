@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>まなびコンパス | 学習・テスト・内面支援 統合システム</title>
+<link rel="icon" href="manabi-compass-images/favicon.svg" type="image/svg+xml">
+<style>
+  :root {
+    --paper: #F3F5FB;
+    --card:  #FFFFFF;
+    --ink:   #16213D;
+    --soft:  #5A6485;
+    --line:  #DEE4F2;
+    --brand:      #4F46E5;
+    --brand-deep: #3730A3;
+    --brand-tint: #EEF2FF;
+    --green:      #10B981;
+    --green-tint: #D1FAE5;
+    --orange:     #F59E0B;
+    --orange-tint:#FEF3C7;
+    --red:        #EF4444;
+    --red-tint:   #FEE2E2;
+    --violet:     #7C3AED;
+    --violet-tint:#EDE9FE;
+    --sky:        #0EA5E9;
+    --sky-tint:   #E0F2FE;
+    --font:   "Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+    --shadow: 0 2px 8px rgba(22,33,61,.07), 0 16px 40px rgba(22,33,61,.10);
+    --radius: 20px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--font); line-height: 1.75; -webkit-font-smoothing: antialiased; }
+
+  /* ── ヘッダー（TOP画像） ── */
+  header {
+    display: block;
+    line-height: 0;
+    padding-top: 32px;
+    background: var(--paper);
+  }
+  header img {
+    width: 90%;
+    max-width: 1000px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    border-radius: 20px;
+  }
+
+  /* ── メイン ── */
+  main {
+    max-width: 860px;
+    margin: 0 auto 60px;
+    padding: 0 16px;
+  }
+
+  /* ── セクション見出し ── */
+  .section-label {
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    color: var(--soft);
+    text-transform: uppercase;
+    margin: 48px 0 18px 4px;
+  }
+  .section-title {
+    font-size: 1.35rem;
+    font-weight: 900;
+    letter-spacing: -.02em;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .section-desc {
+    font-size: .88rem;
+    color: var(--soft);
+    margin-bottom: 22px;
+    line-height: 1.7;
+  }
+
+  /* ── 機能詳細ブロック（縦並び） ── */
+  .feature-block {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1.5px solid var(--line);
+    overflow: hidden;
+    margin-bottom: 28px;
+    position: relative;
+  }
+  .feature-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--accent, var(--brand));
+  }
+  .feature-block-head {
+    padding: 28px 28px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .fb-icon {
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; flex-shrink: 0;
+  }
+  .fb-meta { flex: 1; }
+  .fb-number {
+    font-size: .72rem; font-weight: 700;
+    letter-spacing: .1em;
+    color: var(--accent, var(--brand));
+    margin-bottom: 3px;
+  }
+  .fb-title {
+    font-size: 1.18rem; font-weight: 900;
+    letter-spacing: -.02em; line-height: 1.25;
+    margin-bottom: 4px;
+  }
+  .fb-tag {
+    display: inline-block;
+    font-size: .7rem; font-weight: 700;
+    padding: 2px 10px; border-radius: 999px;
+  }
+
+  /* スクショ画像 — 通常サイズ */
+  .fb-img {
+    margin: 20px 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    line-height: 0;
+  }
+  .fb-img img { width: 100%; display: block; }
+  .fb-img .img-ph {
+    padding: 28px 16px;
+    text-align: center;
+    font-size: 11.5px; color: var(--soft); line-height: 1.7;
+  }
+  .fb-img .img-ph span { display: block; font-size: 28px; margin-bottom: 8px; }
+
+  /* スクショ画像 — 小サイズ（画面の雰囲気が伝わる程度） */
+  .fb-img-sm {
+    margin: 20px 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    line-height: 0;
+    max-width: 460px;
+  }
+  .fb-img-sm img { width: 100%; display: block; }
+
+  /* スクショ画像 — メインビジュアルとして大きく扱う */
+  .fb-img-hero {
+    margin: 20px 28px 0;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1.5px solid var(--line);
+    background: var(--paper);
+    line-height: 0;
+    box-shadow: 0 4px 24px rgba(22,33,61,.10);
+  }
+  .fb-img-hero img { width: 100%; display: block; }
+
+  /* 説明テキスト */
+  .fb-desc {
+    padding: 18px 28px 0;
+    font-size: .88rem; color: var(--soft); line-height: 1.85;
+  }
+
+  /* サブ機能ポイントリスト */
+  .fb-points {
+    margin: 16px 28px 0;
+    display: flex; flex-direction: column; gap: 0;
+    border: 1px solid var(--line);
+    border-radius: 12px; overflow: hidden;
+  }
+  .fb-point {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--line);
+    font-size: .855rem; line-height: 1.65;
+  }
+  .fb-point:last-child { border-bottom: none; }
+  .fb-point .pt-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
+  .fb-point .pt-body { flex: 1; }
+  .fb-point .pt-body strong {
+    display: block; font-size: .87rem; font-weight: 800;
+    color: var(--ink); margin-bottom: 1px;
+  }
+  .fb-point .pt-body span { color: var(--soft); }
+
+  /* サブスクショ（複数枚並べる場合） */
+  .fb-sub-imgs {
+    margin: 16px 28px 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+  }
+  .fb-sub-img {
+    border-radius: 10px; overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--paper);
+  }
+  .fb-sub-img img { width: 100%; display: block; }
+  .fb-sub-img .sub-ph {
+    padding: 16px 10px; text-align: center;
+    font-size: 10.5px; color: var(--soft); line-height: 1.6;
+  }
+  .fb-sub-img .sub-ph span { display: block; font-size: 20px; margin-bottom: 5px; }
+  .fb-sub-label {
+    padding: 8px 12px;
+    font-size: 11px; font-weight: 700; color: var(--soft);
+    background: var(--paper);
+    border-top: 1px solid var(--line);
+    text-align: center;
+  }
+
+  .feature-block-foot { padding: 20px 28px 28px; }
+
+  /* ── 体験デモ ── */
+  .demo-box {
+    background: var(--card);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .demo-box-banner {
+    background: linear-gradient(135deg, var(--brand), #7C3AED);
+    color: #fff;
+    padding: 28px 32px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    flex-wrap: wrap;
+  }
+  .demo-box-banner .left { display: flex; flex-direction: column; gap: 8px; }
+  .demo-box-banner .badge-demo {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,.2); color: #fff;
+    font-size: .72rem; font-weight: 700; padding: 4px 12px; border-radius: 999px;
+    width: fit-content;
+  }
+  .demo-box-banner h3 { font-size: 1.25rem; font-weight: 800; }
+  .demo-box-banner p  { font-size: .85rem; opacity: .85; max-width: 42ch; line-height: 1.7; }
+  .demo-box-banner .btn-try {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #fff; color: var(--brand);
+    font-weight: 800; font-size: .9rem;
+    padding: 12px 28px; border-radius: 12px;
+    text-decoration: none; transition: all .2s; flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(0,0,0,.15);
+  }
+  .demo-box-banner .btn-try:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+  .demo-features {
+    padding: 20px 24px;
+    display: flex; gap: 16px; flex-wrap: wrap;
+    border-top: 1px solid var(--line);
+  }
+  .demo-feat-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--brand-tint); color: var(--brand);
+    font-size: .75rem; font-weight: 700; padding: 4px 12px; border-radius: 999px;
+  }
+
+  /* ── スペック表 ── */
+  .spec-table { width: 100%; border-collapse: collapse; border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); }
+  .spec-table thead th {
+    background: var(--brand-tint); color: var(--brand-deep);
+    font-size: .8rem; font-weight: 700; padding: 12px 16px;
+    text-align: left; border-bottom: 1px solid var(--line);
+  }
+  .spec-table tbody tr { border-bottom: 1px solid var(--line); background: var(--card); }
+  .spec-table tbody tr:last-child { border-bottom: none; }
+  .spec-table tbody td { padding: 12px 16px; font-size: .86rem; }
+  .spec-table tbody td:first-child { font-weight: 700; color: var(--soft); width: 130px; background: var(--paper); }
+
+  /* ── 戻るリンクバー ── */
+  .nav-bar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(243,245,251,.88);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+    padding: 0 20px;
+  }
+  .nav-bar .inner {
+    max-width: 860px; margin: 0 auto;
+    display: flex; align-items: center; height: 54px; gap: 10px;
+  }
+  .nav-logo {
+    font-weight: 800; font-size: 16px;
+    display: flex; align-items: center; gap: 7px;
+    text-decoration: none; color: var(--ink);
+  }
+  .nav-logo img { width: 22px; height: 22px; }
+  /* ── 規約セクション ── */
+  .notice-section {
+    background: var(--brand-tint);
+    padding: 52px 20px;
+    margin-top: 60px;
+  }
+  .notice-section .inner {
+    max-width: 860px; margin: 0 auto;
+  }
+  .notice-dl {
+    display: flex; flex-direction: column; gap: 14px;
+    font-size: .88rem; line-height: 1.75;
+  }
+  .notice-row {
+    display: grid; grid-template-columns: auto 1fr;
+    gap: 6px 18px; align-items: baseline;
+  }
+  .notice-dt { font-weight: 800; color: var(--brand-deep); white-space: nowrap; }
+  .notice-dd { color: var(--soft); }
+
+  /* ── フッター ── */
+  footer {
+    text-align: center;
+    padding: 32px 16px 52px;
+    font-size: .8rem;
+    color: var(--soft);
+    border-top: 1px solid var(--line);
+  }
+  footer a { color: var(--soft); text-decoration: underline; }
+  footer a:hover { color: var(--brand); }
+
+  /* ── アニメーション ── */
+  @keyframes cardIn { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:none; } }
+  .card { animation: cardIn .4s cubic-bezier(.2,.7,.2,1) both; }
+  @media(prefers-reduced-motion:reduce){ *, .card { animation:none!important; transition:none!important; } }
+  @media(max-width:480px) {
+    .fb-img-sm { max-width: 100%; }
+    .demo-box-banner { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ナビバー -->
+<div class="nav-bar">
+  <div class="inner">
+    <a class="nav-logo" href="index.html">
+      <img src="manabi-compass-images/favicon.svg" alt="">
+      まなびコンパス
+    </a>
+  </div>
+</div>
+
+<!-- ヘッダー（TOP画像） -->
+<header>
+  <img src="manabi-compass-images/top.png" alt="まなびコンパス — 学習・テスト・内面支援 統合システム">
+</header>
+
+<!-- ── 体験デモ（TOP画像と同じ幅） ── -->
+<div style="background:var(--paper);padding:32px 0 0;">
+  <div style="width:90%;max-width:1000px;margin:0 auto;">
+    <div class="demo-box">
+      <div class="demo-box-banner">
+        <div class="left">
+          <span class="badge-demo">🎮 体験版デモ</span>
+          <h3>まなびコンパスを体験しよう</h3>
+          <p>サンプルデータで実際の画面を体験できます。生徒・教師の両方の機能をご確認いただけます。データの保存はありません。</p>
+        </div>
+        <a href="manabi-compass-demo.html" target="_blank" class="btn-try">
+          🧭 体験版を開く →
+        </a>
+      </div>
+      <div class="demo-features">
+        <span class="demo-feat-pill">📔 毎日の振り返り</span>
+        <span class="demo-feat-pill">📅 学習計画</span>
+        <span class="demo-feat-pill">✏️ テスト対策</span>
+        <span class="demo-feat-pill">❓ クイズ</span>
+        <span class="demo-feat-pill">📊 AIレポート</span>
+        <span class="demo-feat-pill">🏆 バッジ・実績</span>
+        <span class="demo-feat-pill">👩‍🏫 教師ダッシュボード</span>
+        <span class="demo-feat-pill">🚨 AIアラート</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- ── 機能詳細 ── -->
+  <p class="section-label">機能一覧</p>
+  <p class="section-title">生徒と先生、両方をサポート</p>
+  <p class="section-desc">学習記録・計画・テスト対策・AI分析・アラートをひとつのシステムに統合しています。</p>
+
+  <!-- 01 毎日の振り返り -->
+  <div class="feature-block" style="--accent:var(--brand)">
+    <div class="feature-block-head">
+      <div class="fb-icon" style="background:var(--brand-tint)">📓</div>
+      <div class="fb-meta">
+        <div class="fb-number">FEATURE 01</div>
+        <div class="fb-title">毎日の振り返り</div>
+        <span class="fb-tag" style="background:var(--brand-tint);color:var(--brand)">生徒向け · 自己調整学習</span>
+      </div>
+    </div>
+    <!-- 小さめに表示 -->
+    <div class="fb-img-sm">
+      <img src="manabi-compass-images/feature-diary.png" alt="毎日の振り返り画面">
+    </div>
+    <div class="fb-desc">
+      気分・努力度・満足度を5段階で毎日記録する振り返りフォームです。自分の状態を数値化することで、学習への向き合い方の変化に気づけます。記録は7日間のカレンダービューでいつでも振り返ることができます。
+    </div>
+    <div class="fb-points">
+      <div class="fb-point">
+        <span class="pt-icon">😊</span>
+        <div class="pt-body">
+          <strong>気分・努力度・満足度を5段階入力</strong>
+          <span>毎日のコンディションをシンプルに記録。入力は30秒以内で完了します。</span>
+        </div>
+      </div>
+      <div class="fb-point">
+        <span class="pt-icon">📆</span>
+        <div class="pt-body">
+          <strong>7日間カレンダービュー</strong>
+          <span>1週間の記録を一覧表示。気分のムラや疲労のパターンが一目でわかります。</span>
+        </div>
+      </div>
+      <div class="fb-point">
+        <span class="pt-icon">🔥</span>
+        <div class="pt-body">
+          <strong>ストリーク（連続記録）機能</strong>
+          <span>何日連続で記録したかを表示。継続の達成感がモチベーションを維持します。</span>
+        </div>
+      </div>
+      <div class="fb-point">
+        <span class="pt-icon">📝</span>
+        <div class="pt-body">
+          <strong>自由記述コメント欄</strong>
+          <span>その日感じたことや困ったことを自由に書き残せます。先生への間接的なSOSにもなります。</span>
+        </div>
+      </div>
+    </div>
+    <div class="feature-block-foot"></div>
+  </div>
+
+  <!-- 02 学習計画管理 -->
+  <div class="feature-block" style="--accent:var(--green)">
+    <div class="feature-block-head">
+      <div class="fb-icon" style="background:var(--green-tint)">📅</div>
+      <div class="fb-meta">
+        <div class="fb-number">FEATURE 02</div>
+        <div class="fb-title">学習計画管理</div>
+        <span class="fb-tag" style="background:var(--green-tint);color:var(--green)">生徒向け · 計画立案</span>
+      </div>
+    </div>
+    <div class="fb-img">
+      <img src="manabi-compass-images/feature-plan.png" alt="学習計画管理画面">
+    </div>
+    <div class="fb-desc">
+      週間カレンダービューで教科別の学習計画を立てて管理できます。「何をいつやるか」を事前に決めることで、計画的な学習習慣が身につきます。バーチャートで学習量の教科間の偏りも視覚的に把握できます。
+    </div>
+    <div class="fb-points">
+      <div class="fb-point">
+        <span class="pt-icon">📊</span>
+        <div class="pt-body">
+          <strong>週間カレンダービュー</strong>
+          <span>月〜日の7日間に教科・内容・時間を入力して計画を作成。ドラッグ操作で簡単に変更できます。</span>
+        </div>
+      </div>
+      <div class="fb-point">
+        <span class="pt-icon">📈</span>
+        <div class="pt-body">
+          <strong>教科別バーチャート</strong>
+          <span>各教科の学習時間をグラフで比較。「数学ばかり・英語が手薄」などの偏りを一目で発見できます。</span>
+        </div>
+      </div>
+      <div class="fb-point">
+        <span class="pt-icon">✅</span>
+        <div class="pt-body">
+          <strong>計画 vs 実績の比較</strong>
+          <span>立てた計画と実際に学習した時間を比較して振り返れます。自己調整力の向上につながります。</span>
+        </div>
+      </div>
+    </div>
+    <div class="feature-block-foot"></div>
+  </div>
+
+  <!-- 03 テスト対策モード -->
+  <div class="feature-block" style="--accent:var(--orange)">
+    <div class="feature-block-head">
+      <div class="fb-icon" style="background:var(--orange-tint)">📝</div>
+      <div class="fb-meta">
+        <div class="fb-number">FEATURE 03</div>
+        <div class="fb-title">テスト対策モード</div>
+        <span class="fb-tag" style="background:var(--orange-tint);color:var(--orange)">生徒向け · テスト期間専用</span>
+      </div>
+    </div>
+    <!-- 小さめに表示 -->
+    <div class="fb-img-sm">
+      <img src="manabi-compass-images/feature-test.png" alt="テスト対策モード画面">
+    </div>
+    <div class="fb-desc">
+      テスト期間中に特別に起動するモードです。テストまでの日数カウントダウン、教科ごとの出題範囲・アドバイス管理、ストレス/自信の推移グラフで、テスト対策を総合的にサポートします。
+    </div>
+    <div class="fb-points">
+      <div class="fb-point">
+        <span class="pt-icon">⏳</span>
+        <div class="pt-body">
+          <strong>テストまでのカウントダウン</strong>
+          <span>残り日数を大きく表示。「あと◯日」が常に意識され、計画的な対策を促します。</span>
+        </div>
+      </div>
+      <div class="fb-point">
+        <span class="pt-icon">📚</span>
+        <div class="pt-body">
+          <strong>教科ごとの範囲・アドバイス管理</strong>
+          <span>各教科の出題範囲と教師からのアドバイスをカード形式で確認。優先度を整理できます。</span>
+        </div>
+      </div>
+      <div class="fb-point">
+        <span class="pt-icon">💓</span>
+        <div class="pt-body">
+          <strong>ストレス・自信の推移グラフ</strong>
+          <span>テスト期間中のストレスと自信の変化を折れ線グラフで可視化。状態変化を先生が把握できます。</span>
+        </div>
+      </div>
+      <div class="fb-point">
+        <span class="pt-icon">📋</span>
+        <div class="pt-body">
+          <strong>テスト期間専用の振り返りフォーム</strong>
+          <span>テスト後に「できたこと・次への課題」を記録するフォームが自動で表示されます。</span>
+        </div>
+      </div>
+    </div>
+    <div class="feature-block-foot"></div>
+  </div>
+
+  <!-- 04 AI分析レポート -->
+  <div class="feature-block" style="--accent:var(--violet)">
+    <div class="feature-block-head">
+      <div class="fb-icon" style="background:var(--violet-tint)">🤖</div>
+      <div class="fb-meta">
+        <div class="fb-number">FEATURE 04</div>
+        <div class="fb-title">AI分析レポート</div>
+        <span class="fb-tag" style="background:var(--violet-tint);color:var(--violet)">生徒向け · AI · PDF出力</span>
+      </div>
+    </div>
+    <div class="fb-img">
+      <img src="manabi-compass-images/feature-ai.png" alt="AI分析レポート画面">
+    </div>
+    <div class="fb-desc">
+      Azure OpenAI（GPT）が月次・テスト期間のデータをまとめて自動分析します。学習量・気分の傾向・改善点を文章で生成し、教科別の円グラフとセットでわかりやすく表示。保護者向けにPDF出力も可能です。
+    </div>
+    <div class="fb-points">
+      <div class="fb-point">
+        <span class="pt-icon">🧠</span>
+        <div class="pt-body">
+          <strong>月次AI分析レポートの自動生成</strong>
+          <span>1ヶ月のデータをAIがまとめ、学習の振り返りコメントを自動作成します。</span>
+        </div>
+      </div>
+      <div class="fb-point">
+        <span class="pt-icon">🥧</span>
+        <div class="pt-body">
+          <strong>教科別学習時間の円グラフ</strong>
+          <span>どの教科にどれだけ時間をかけたかを円グラフで表示。バランスの偏りが一目でわかります。</span>
+        </div>
+      </div>
+      <div class="fb-point">
+        <span class="pt-icon">📄</span>
+        <div class="pt-body">
+          <strong>PDF出力・Google Drive自動保存</strong>
+          <span>レポートをPDFで書き出してGoogle Driveに保存。保護者への配布や面談資料として活用できます。</span>
+        </div>
+      </div>
+      <div class="fb-point">
+        <span class="pt-icon">📅</span>
+        <div class="pt-body">
+          <strong>テスト期間レポートにも対応</strong>
+          <span>テスト期間中のストレス変化・学習量・自信の推移を専用フォーマットでまとめます。</span>
+        </div>
+      </div>
+    </div>
+    <div class="feature-block-foot"></div>
+  </div>
+
+  <!-- 05 AIアラートシステム（教師向け） -->
+  <div class="feature-block" style="--accent:var(--red)">
+    <div class="feature-block-head">
+      <div class="fb-icon" style="background:var(--red-tint)">🚨</div>
+      <div class="fb-meta">
+        <div class="fb-number">FEATURE 05</div>
+        <div class="fb-title">AIアラートシステム ＋ クラス分析</div>
+        <span class="fb-tag" style="background:var(--red-tint);color:var(--red)">教師向け · 早期支援 · 異常検知</span>
+      </div>
+    </div>
+    <!-- クラス分析をメインビジュアルとして大きく -->
+    <div class="fb-img-hero">
+      <img src="manabi-compass-images/feature-class-analysis.png" alt="クラス分析画面">
+    </div>
+    <div class="fb-desc">
+      生徒の記録データをAIがリアルタイムで監視し、異常なパターンを検知すると自動でアラートを生成します。ルールベースの判定とAI深層分析の2段構えで、見えにくいSOSを早期にキャッチします。クラス全体の提出率・気分推移・学習バランスはグラフで一括把握できます。
+    </div>
+    <div class="fb-points">
+      <div class="fb-point">
+        <span class="pt-icon">🔴</span>
+        <div class="pt-body">
+          <strong>緊急アラート（Critical）</strong>
+          <span>「死にたい」などの深刻なキーワードをAIが検知した場合に即時通知します。</span>
+        </div>
+      </div>
+      <div class="fb-point">
+        <span class="pt-icon">🟠</span>
+        <div class="pt-body">
+          <strong>高アラート（High）</strong>
+          <span>3日間の気分平均が2以下・ストレス急上昇など、継続的な低下パターンで発火します。</span>
+        </div>
+      </div>
+      <div class="fb-point">
+        <span class="pt-icon">🟡</span>
+        <div class="pt-body">
+          <strong>中アラート（Medium）</strong>
+          <span>提出3日連続未記録・努力度の持続的な低下など、習慣の乱れを検知します。</span>
+        </div>
+      </div>
+      <div class="fb-point">
+        <span class="pt-icon">📊</span>
+        <div class="pt-body">
+          <strong>クラス分析ダッシュボード</strong>
+          <span>提出率・クラス平均気分・教科別学習量をグラフで一覧。気になる生徒を素早く特定できます。</span>
+        </div>
+      </div>
+    </div>
+    <div class="feature-block-foot"></div>
+  </div>
+
+  <!-- 06 ゲーミフィケーション -->
+  <div class="feature-block" style="--accent:var(--sky)">
+    <div class="feature-block-head">
+      <div class="fb-icon" style="background:var(--sky-tint)">🏆</div>
+      <div class="fb-meta">
+        <div class="fb-number">FEATURE 06</div>
+        <div class="fb-title">ゲーミフィケーション</div>
+        <span class="fb-tag" style="background:var(--sky-tint);color:var(--sky)">生徒向け · 継続 · バッジ</span>
+      </div>
+    </div>
+    <div class="fb-img">
+      <img src="manabi-compass-images/feature-badge.png" alt="バッジ・実績画面">
+    </div>
+    <div class="fb-desc">
+      XP（経験値）・レベルアップ・多数のバッジシステムで、継続して記録したくなる仕組みを作りました。記録を続けるほど実績が解放され、学習習慣が楽しみながら定着します。
+    </div>
+    <div class="fb-points">
+      <div class="fb-point">
+        <span class="pt-icon">⭐</span>
+        <div class="pt-body">
+          <strong>XP・レベルシステム</strong>
+          <span>振り返りを記録するたびにXPを獲得。レベルが上がるとアバターや称号が変化します。</span>
+        </div>
+      </div>
+      <div class="fb-point">
+        <span class="pt-icon">🎖️</span>
+        <div class="pt-body">
+          <strong>多様なバッジコレクション</strong>
+          <span>「7日連続記録」「テスト対策完了」「クイズ100問達成」など、達成条件ごとに異なるバッジが解放されます。</span>
+        </div>
+      </div>
+      <div class="fb-point">
+        <span class="pt-icon">📊</span>
+        <div class="pt-body">
+          <strong>実績ページで一覧確認</strong>
+          <span>獲得済み・未獲得のバッジをまとめて表示。次の目標が明確になり継続動機につながります。</span>
+        </div>
+      </div>
+    </div>
+    <div class="feature-block-foot"></div>
+  </div>
+
+  <!-- ── 技術仕様 ── -->
+  <p class="section-label">技術仕様</p>
+  <table class="spec-table">
+    <thead>
+      <tr><th>項目</th><th>内容</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>フレームワーク</td><td>React 18 + TypeScript</td></tr>
+      <tr><td>ビルドツール</td><td>Vite</td></tr>
+      <tr><td>スタイリング</td><td>Tailwind CSS + Framer Motion</td></tr>
+      <tr><td>グラフ</td><td>Recharts</td></tr>
+      <tr><td>状態管理</td><td>Zustand（persist）</td></tr>
+      <tr><td>バックエンド</td><td>Google Apps Script (V8)</td></tr>
+      <tr><td>データベース</td><td>Google スプレッドシート（10シート）</td></tr>
+      <tr><td>AI</td><td>Azure OpenAI（GPT-3.5 / 4o）</td></tr>
+      <tr><td>PDF生成</td><td>GAS HTML→PDF + Google Drive</td></tr>
+    </tbody>
+  </table>
+
+</main>
+
+<!-- ── 規約 ── -->
+<section class="notice-section">
+  <div class="inner">
+    <p class="section-label">Notice</p>
+    <p class="section-title" style="margin-bottom:24px;">ご利用にあたって</p>
+    <dl class="notice-dl">
+      <div class="notice-row">
+        <dt class="notice-dt">📄 利用について</dt>
+        <dd class="notice-dd">本システムは研究・教育目的で開発されました。授業や研究での利用は自由です。再配布・改変する場合は著作者名を残してください。</dd>
+      </div>
+      <div class="notice-row">
+        <dt class="notice-dt">🔒 データの取り扱い</dt>
+        <dd class="notice-dd">生徒が入力した振り返り・気分・学習記録などの個人情報は、Google スプレッドシートに保存されます。適切なアクセス管理のもとで運用してください。</dd>
+      </div>
+      <div class="notice-row">
+        <dt class="notice-dt">🤖 AIの利用</dt>
+        <dd class="notice-dd">AIレポート・アラート機能には Azure OpenAI を使用しています。生成された内容はあくまで参考情報です。最終的な判断は教師・保護者が行ってください。</dd>
+      </div>
+      <div class="notice-row">
+        <dt class="notice-dt">⚠️ 免責事項</dt>
+        <dd class="notice-dd">本システムの使用によるデータ損失・トラブルについて作者は責任を負いません。重要なデータは定期的にバックアップしてください。</dd>
+      </div>
+      <div class="notice-row">
+        <dt class="notice-dt">🌐 推奨環境</dt>
+        <dd class="notice-dd">Google Chrome（最新版）を推奨します。Safari・Edge でも動作しますが、一部機能が異なる場合があります。</dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<footer>
+  © TAKANO tools &nbsp;|&nbsp; まなびコンパス（学習・テスト・内面支援 統合システム）
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>まなびコンパス｜体験版デモ</title>
+<style>
+/* ── リセット ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:#F8FAFC;color:#111827;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
+
+/* ── カラー変数 ── */
+:root{
+  --blue-600:#2563EB;--blue-50:#EFF6FF;--blue-100:#DBEAFE;--blue-200:#BFDBFE;
+  --violet-600:#7C3AED;--violet-50:#F5F3FF;--violet-100:#EDE9FE;--violet-200:#DDD6FE;
+  --green-600:#059669;--green-50:#ECFDF5;--green-100:#D1FAE5;--green-200:#A7F3D0;
+  --amber-600:#D97706;--amber-50:#FFFBEB;--amber-100:#FEF3C7;--amber-200:#FDE68A;
+  --orange-600:#EA580C;--orange-50:#FFF7ED;--orange-100:#FFEDD5;--orange-200:#FED7AA;
+  --red-600:#DC2626;--red-50:#FEF2F2;--red-100:#FEE2E2;--red-200:#FECACA;
+  --pink-600:#DB2777;--pink-50:#FDF2F8;--pink-100:#FCE7F3;
+  --rose-50:#FFF1F2;--rose-200:#FECDD3;--rose-600:#E11D48;
+  --gray-50:#F9FAFB;--gray-100:#F3F4F6;--gray-200:#E5E7EB;--gray-300:#D1D5DB;
+  --gray-400:#9CA3AF;--gray-500:#6B7280;--gray-700:#374151;--gray-900:#111827;
+  --shadow-card:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.08);
+  --shadow-hover:0 4px 24px rgba(0,0,0,.12);
+  --radius-2xl:1rem;--radius-xl:.75rem;
+}
+
+/* ── レイアウト ── */
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* ── サイドバー ── */
+.sidebar{
+  width:240px;min-width:240px;
+  background:#fff;
+  border-right:1px solid var(--gray-200);
+  display:flex;flex-direction:column;
+  overflow-y:auto;
+}
+.sb-header{
+  padding:20px 16px 16px;
+  border-bottom:1px solid var(--gray-100);
+}
+.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.sb-logo-icon{
+  width:40px;height:40px;border-radius:12px;
+  background:linear-gradient(135deg,#2563EB,#7C3AED);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;color:#fff;flex-shrink:0
+}
+.sb-logo-text{font-weight:800;font-size:1rem;color:var(--gray-900);line-height:1.2}
+.sb-logo-sub{font-size:.65rem;color:var(--gray-400);margin-top:2px}
+.sb-demo-pill{
+  display:inline-flex;align-items:center;gap:4px;
+  background:var(--amber-100);color:var(--amber-600);
+  font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:999px;
+  margin-top:8px
+}
+
+.sb-section{font-size:.65rem;font-weight:700;color:var(--gray-400);letter-spacing:.08em;padding:12px 16px 4px;text-transform:uppercase}
+
+.nav-btn{
+  display:flex;align-items:center;gap:10px;
+  width:100%;padding:9px 16px;
+  border:none;background:none;cursor:pointer;
+  font-family:inherit;font-size:.83rem;color:var(--gray-500);
+  border-radius:0;text-align:left;transition:all .12s;
+}
+.nav-btn:hover{background:var(--gray-50);color:var(--gray-900)}
+.nav-btn.active{
+  background:var(--blue-50);color:var(--blue-600);font-weight:700;
+  border-right:3px solid var(--blue-600);
+}
+.nav-btn .nb-icon{width:20px;text-align:center;font-size:1rem;flex-shrink:0}
+
+/* ── メインコンテンツ ── */
+.main{flex:1;overflow-y:auto;background:#F8FAFC}
+.page{display:none;padding:0;animation:fadeIn .2s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── ヘッダー ── */
+.page-header{
+  padding:20px 24px 16px;
+  border-bottom:1px solid var(--gray-200);
+  background:#fff;
+}
+.page-header h1{font-size:1.25rem;font-weight:800;color:var(--gray-900)}
+.page-header .sub{font-size:.8rem;color:var(--gray-400);margin-top:2px}
+
+/* ── コンテンツラッパー ── */
+.content{padding:20px 24px;max-width:900px}
+.content-wide{padding:20px 24px;max-width:1200px}
+.space-y>*+*{margin-top:16px}
+
+/* ── カード ── */
+.card{
+  background:#fff;border-radius:var(--radius-2xl);
+  border:1px solid var(--gray-200);
+  box-shadow:var(--shadow-card);
+  padding:20px;
+}
+.card-sm{
+  background:#fff;border-radius:var(--radius-xl);
+  border:1px solid var(--gray-200);
+  box-shadow:var(--shadow-card);
+  padding:16px;
+}
+.card-neon-blue{border-color:var(--blue-200);box-shadow:0 0 0 1px var(--blue-100),var(--shadow-card)}
+.card-neon-violet{border-color:var(--violet-200);box-shadow:0 0 0 1px var(--violet-100),var(--shadow-card)}
+.card-neon-green{border-color:var(--green-200);box-shadow:0 0 0 1px var(--green-100),var(--shadow-card)}
+.card-neon-amber{border-color:var(--amber-200);box-shadow:0 0 0 1px var(--amber-100),var(--shadow-card)}
+
+/* ── グリッド ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+/* ── ステートカード ── */
+.stat-card{
+  background:#fff;border-radius:var(--radius-2xl);border:1px solid var(--gray-200);
+  box-shadow:var(--shadow-card);padding:20px;
+  cursor:pointer;transition:all .2s;
+}
+.stat-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px)}
+.stat-card-title{font-size:.7rem;font-weight:500;color:var(--gray-500);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+.stat-card-icon{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0
+}
+.stat-card-val{font-size:1.8rem;font-weight:900;line-height:1;color:var(--gray-900)}
+.stat-card-sub{font-size:.72rem;color:var(--gray-400);margin-top:4px}
+
+/* ── バッジ ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:999px;font-size:.72rem;font-weight:700}
+.badge-blue{background:var(--blue-100);color:var(--blue-600)}
+.badge-violet{background:var(--violet-100);color:var(--violet-600)}
+.badge-green{background:var(--green-100);color:var(--green-600)}
+.badge-amber{background:var(--amber-100);color:var(--amber-600)}
+.badge-red{background:var(--red-100);color:var(--red-600)}
+.badge-gray{background:var(--gray-100);color:var(--gray-500)}
+
+/* ── ストリークカード ── */
+.streak-card{
+  border-radius:var(--radius-2xl);padding:16px 20px;border:1px solid;
+}
+.streak-orange{background:linear-gradient(135deg,var(--orange-50),var(--amber-50));border-color:var(--amber-200)}
+.streak-violet{background:linear-gradient(135deg,var(--violet-50),var(--blue-50));border-color:var(--violet-200)}
+
+/* ── プログレスバー ── */
+.prog-wrap{background:var(--gray-100);border-radius:999px;overflow:hidden}
+.prog-bar{height:100%;border-radius:999px;transition:width .8s ease}
+
+/* ── 気分セレクター ── */
+.mood-row{display:flex;gap:8px;flex-wrap:wrap}
+.mood-btn{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:10px 8px;border-radius:12px;cursor:pointer;
+  border:2px solid var(--gray-200);background:#fff;
+  font-size:.7rem;color:var(--gray-500);
+  transition:all .15s;flex:1;min-width:60px;font-family:inherit
+}
+.mood-btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-card)}
+.mood-btn.sel-1{border-color:#FCA5A5;background:var(--red-50);color:var(--red-600)}
+.mood-btn.sel-2{border-color:#FCD34D;background:var(--amber-50);color:var(--amber-600)}
+.mood-btn.sel-3{border-color:#93C5FD;background:var(--blue-50);color:var(--blue-600)}
+.mood-btn.sel-4{border-color:#6EE7B7;background:var(--green-50);color:var(--green-600)}
+.mood-btn.sel-5{border-color:#6EE7B7;background:var(--green-50);color:var(--green-600)}
+.mood-emoji{font-size:1.8rem;display:block}
+
+/* ── フォーム ── */
+.form-label{font-size:.78rem;font-weight:600;color:var(--gray-700);margin-bottom:5px;display:block}
+.form-group{margin-bottom:14px}
+textarea,input[type=text],input[type=number],select{
+  width:100%;padding:9px 12px;
+  border:1.5px solid var(--gray-300);border-radius:10px;
+  font-family:inherit;font-size:.83rem;color:var(--gray-900);
+  background:#fff;outline:none;transition:border .15s;
+}
+textarea:focus,input:focus,select:focus{border-color:var(--blue-600);box-shadow:0 0 0 3px var(--blue-100)}
+textarea{resize:vertical}
+
+/* ── ボタン ── */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:9px 18px;border-radius:10px;border:none;
+  cursor:pointer;font-family:inherit;font-size:.83rem;font-weight:700;
+  transition:all .15s;
+}
+.btn-blue{background:var(--blue-600);color:#fff}
+.btn-blue:hover{background:#1D4ED8;transform:translateY(-1px)}
+.btn-green{background:var(--green-600);color:#fff}
+.btn-green:hover{background:#047857}
+.btn-ghost{background:var(--gray-100);color:var(--gray-600);border:1px solid var(--gray-300)}
+.btn-ghost:hover{background:var(--gray-200)}
+.btn-sm{padding:5px 12px;font-size:.72rem;border-radius:8px}
+.btn-disabled{opacity:.5;pointer-events:none}
+
+/* ── チャートバー ── */
+.chart-col{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
+.chart-bar{width:100%;border-radius:4px 4px 0 0;min-height:4px;transition:height .5s ease}
+.chart-lbl{font-size:.65rem;color:var(--gray-400)}
+.chart-val{font-size:.7rem;font-weight:700;color:var(--gray-700)}
+.chart-wrap{display:flex;gap:8px;align-items:flex-end;border-bottom:1.5px solid var(--gray-200)}
+
+/* ── カレンダー ── */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-cell{
+  aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1px;
+  font-size:.7rem;border:1.5px solid transparent;background:var(--gray-50);
+  cursor:pointer;transition:all .12s;
+}
+.cal-cell.other-month{opacity:.3}
+.cal-cell.has-diary{background:#fff;border-color:transparent}
+.cal-cell.today{border-color:var(--blue-600)!important;font-weight:700}
+.cal-cell:hover{border-color:var(--gray-300)}
+.cal-day-hdr{text-align:center;font-size:.68rem;font-weight:700;color:var(--gray-400);padding:2px 0}
+
+/* ── 計画アイテム ── */
+.plan-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;border-radius:10px;
+  background:var(--gray-50);border:1px solid var(--gray-200);
+  margin-bottom:8px;border-left:4px solid transparent;
+}
+
+/* ── テスト教科カード ── */
+.subject-card{
+  border:1px solid var(--gray-200);border-radius:12px;
+  padding:14px;background:#fff;margin-bottom:10px;
+  border-left:4px solid transparent;
+}
+
+/* ── クイズ選択肢 ── */
+.quiz-opt{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 14px;border:1.5px solid var(--gray-200);
+  border-radius:10px;cursor:pointer;background:#fff;
+  margin-bottom:8px;transition:all .15s;font-size:.85rem;
+}
+.quiz-opt:hover:not(.disabled){border-color:var(--blue-600);background:var(--blue-50);transform:translateX(2px)}
+.quiz-opt.correct{border-color:var(--green-600);background:var(--green-50);color:var(--green-600)}
+.quiz-opt.wrong{border-color:var(--red-600);background:var(--red-50);color:var(--red-600)}
+.quiz-opt.disabled{cursor:default;pointer-events:none}
+.quiz-opt-label{
+  width:24px;height:24px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.72rem;font-weight:700;flex-shrink:0;
+  background:var(--gray-100);color:var(--gray-600);
+}
+.quiz-opt.correct .quiz-opt-label{background:var(--green-100);color:var(--green-600)}
+.quiz-opt.wrong .quiz-opt-label{background:var(--red-100);color:var(--red-600)}
+
+/* ── AIバブル ── */
+.ai-bubble{
+  background:linear-gradient(135deg,var(--violet-50),var(--blue-50));
+  border:1px solid var(--violet-200);
+  border-radius:0 14px 14px 14px;
+  padding:16px 18px;font-size:.85rem;line-height:1.8;
+  color:var(--gray-700);position:relative;margin-top:20px;
+}
+.ai-bubble::before{
+  content:'🤖';position:absolute;top:-22px;left:0;font-size:1.3rem;
+}
+
+/* ── バッジグリッド ── */
+.badge-card{
+  border-radius:16px;padding:14px;text-align:center;
+  border:1px solid var(--gray-200);background:var(--gray-50);
+  cursor:pointer;transition:all .18s;
+}
+.badge-card:hover{transform:translateY(-3px) scale(1.04);box-shadow:var(--shadow-hover)}
+.badge-card.earned{
+  border-color:var(--amber-200);
+  background:var(--amber-50);
+  box-shadow:0 4px 16px rgba(217,119,6,.12);
+}
+.badge-card.earned-monthly{
+  border-color:var(--rose-200);
+  background:linear-gradient(135deg,var(--rose-50),var(--orange-50));
+}
+.badge-card.locked{opacity:.4;filter:grayscale(1)}
+.badge-icon{font-size:2rem;display:block;margin-bottom:6px}
+.badge-name{font-size:.72rem;font-weight:700;color:var(--amber-600)}
+.badge-name-locked{font-size:.72rem;font-weight:700;color:var(--gray-400)}
+.badge-desc{font-size:.65rem;color:var(--gray-400);margin-top:2px;line-height:1.4}
+
+/* ── XPバー ── */
+.xp-section{
+  background:linear-gradient(135deg,var(--violet-50),var(--blue-50));
+  border:1px solid var(--violet-200);border-radius:14px;padding:16px 20px;
+}
+
+/* ── アラートカード ── */
+.alert-card{
+  border-radius:16px;padding:18px;border:1px solid;
+  margin-bottom:12px;transition:all .15s;
+}
+.alert-card:hover{box-shadow:var(--shadow-hover)}
+
+/* ── 生徒行 ── */
+.student-row{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 20px;border-bottom:1px solid var(--gray-100);
+  cursor:pointer;transition:background .1s;
+}
+.student-row:hover{background:var(--gray-50)}
+.student-avatar{
+  width:38px;height:38px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;flex-shrink:0;
+}
+
+/* ── モーダル ── */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(0,0,0,.4);
+  z-index:200;display:none;align-items:center;justify-content:center;
+}
+.modal-bg.open{display:flex}
+.modal{
+  background:#fff;border-radius:20px;padding:28px;
+  max-width:440px;width:90%;max-height:80vh;overflow-y:auto;
+  box-shadow:0 20px 60px rgba(0,0,0,.2);
+}
+
+/* ── タブ ── */
+.tabs{display:flex;gap:4px;background:var(--gray-100);border-radius:10px;padding:4px;margin-bottom:16px}
+.tab-btn{
+  flex:1;padding:7px;border:none;border-radius:8px;cursor:pointer;
+  font-family:inherit;font-size:.78rem;font-weight:600;
+  background:none;color:var(--gray-500);transition:all .15s;
+}
+.tab-btn.active{
+  background:#fff;color:var(--blue-600);
+  box-shadow:var(--shadow-card);
+}
+
+/* ── 緊急バナー ── */
+.critical-banner{
+  background:var(--red-50);border:1px solid rgba(239,68,68,.3);
+  border-radius:16px;padding:16px 20px;margin-bottom:16px;
+}
+
+/* ── カウントダウン ── */
+.countdown-card{
+  background:linear-gradient(135deg,#3B82F6,#7C3AED);
+  border-radius:20px;padding:24px;color:#fff;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  flex-wrap:wrap;
+}
+.countdown-num{font-size:4rem;font-weight:900;line-height:1}
+.countdown-msg-box{
+  background:rgba(255,255,255,.15);border-radius:10px;
+  padding:8px 16px;font-size:.85rem;margin-top:10px;display:inline-block;
+}
+
+/* ── トースト ── */
+.toast{
+  position:fixed;bottom:24px;right:24px;z-index:9999;
+  background:var(--gray-900);color:#fff;padding:12px 18px;border-radius:12px;
+  font-size:.83rem;display:flex;align-items:center;gap:8px;
+  box-shadow:0 8px 32px rgba(0,0,0,.2);animation:slideUp .3s ease;pointer-events:none;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.toast.hide{animation:slideDown .3s ease forwards}
+@keyframes slideDown{to{opacity:0;transform:translateY(16px)}}
+
+/* ── デモ注意書き ── */
+.demo-notice{
+  background:var(--amber-50);border:1px solid var(--amber-200);
+  border-radius:12px;padding:10px 14px;font-size:.78rem;color:var(--amber-600);
+  display:flex;align-items:center;gap:8px;margin-bottom:16px;
+}
+
+/* ── レスポンシブ ── */
+@media(max-width:640px){
+  .sidebar{display:none}
+  .grid-4{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ════════ SIDEBAR ════════ -->
+<nav class="sidebar">
+  <div class="sb-header">
+    <div class="sb-logo">
+      <div class="sb-logo-icon">🧭</div>
+      <div>
+        <div class="sb-logo-text">まなびコンパス</div>
+        <div class="sb-logo-sub">学習・テスト・内面支援</div>
+      </div>
+    </div>
+    <div class="sb-demo-pill">🎮 体験版デモ</div>
+  </div>
+
+  <div class="sb-section">生徒メニュー</div>
+  <button class="nav-btn active" onclick="showPage('dashboard')"><span class="nb-icon">🏠</span>ダッシュボード</button>
+  <button class="nav-btn" onclick="showPage('diary')"><span class="nb-icon">📔</span>毎日の振り返り</button>
+  <button class="nav-btn" onclick="showPage('plan')"><span class="nb-icon">📅</span>学習計画</button>
+  <button class="nav-btn" onclick="showPage('test')"><span class="nb-icon">✏️</span>テスト対策</button>
+  <button class="nav-btn" onclick="showPage('quiz')"><span class="nb-icon">❓</span>クイズ</button>
+  <button class="nav-btn" onclick="showPage('report')"><span class="nb-icon">📊</span>AIレポート</button>
+  <button class="nav-btn" onclick="showPage('badge')"><span class="nb-icon">🏆</span>バッジ・実績</button>
+
+  <div class="sb-section">教師メニュー</div>
+  <button class="nav-btn" onclick="showPage('teacher')"><span class="nb-icon">👩‍🏫</span>教師ダッシュボード</button>
+  <button class="nav-btn" onclick="showPage('alert')"><span class="nb-icon">🚨</span>アラート管理</button>
+</nav>
+
+<!-- ════════ MAIN ════════ -->
+<main class="main">
+
+<!-- ══════════════════════════════
+     ダッシュボード
+══════════════════════════════ -->
+<div class="page active" id="page-dashboard">
+  <div class="page-header">
+    <h1>こんにちは、田中さん！</h1>
+    <div class="sub">2025年8月31日（日）</div>
+  </div>
+  <div class="content space-y">
+    <div class="demo-notice">💡 サンプルデータで動作しています。実際のアプリではリアルタイムに更新されます。</div>
+
+    <!-- 担任メッセージ -->
+    <div class="card" style="border-left:3px solid var(--blue-600)">
+      <div style="display:flex;align-items:flex-start;gap:12px">
+        <span style="font-size:1.5rem">📬</span>
+        <div>
+          <div style="font-size:.7rem;font-weight:700;color:var(--blue-600);margin-bottom:4px">担任・鈴木先生からのメッセージ</div>
+          <div style="font-size:.85rem;line-height:1.7;color:var(--gray-700)">中間テストまで2週間を切りました。体調管理に気をつけながら計画的に取り組みましょう。質問があればいつでも声をかけてください！💪</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- テストカウントダウン -->
+    <div class="countdown-card">
+      <div>
+        <div style="font-size:.85rem;opacity:.8;margin-bottom:4px">2学期 中間テスト まで</div>
+        <div class="countdown-num">12</div>
+        <div style="font-size:.9rem;opacity:.85">日</div>
+        <div class="countdown-msg-box">💪 正念場！集中して取り組もう！</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:.75rem;opacity:.7;margin-bottom:6px">9月12日（金）</div>
+        <div style="width:180px">
+          <div style="display:flex;justify-content:space-between;font-size:.72rem;opacity:.8;margin-bottom:4px">
+            <span>達成 847分</span><span>目標 1200分</span>
+          </div>
+          <div class="prog-wrap" style="height:8px">
+            <div class="prog-bar" style="width:70%;background:rgba(255,255,255,.8)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="grid-4">
+      <!-- ストリーク -->
+      <div class="streak-card streak-orange">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <span style="font-size:.7rem;font-weight:700;color:var(--amber-600)">🔥 日記ストリーク</span>
+        </div>
+        <div style="font-size:2rem;font-weight:900;color:var(--orange-600)">12<span style="font-size:.9rem;font-weight:normal;color:var(--gray-500)">日</span></div>
+        <div style="font-size:.68rem;color:var(--gray-500);margin-top:2px">最長記録: 22日</div>
+      </div>
+      <!-- クイズストリーク -->
+      <div class="streak-card streak-violet">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <span style="font-size:.7rem;font-weight:700;color:var(--violet-600)">⚡ クイズストリーク</span>
+        </div>
+        <div style="font-size:2rem;font-weight:900;color:var(--violet-600)">5<span style="font-size:.9rem;font-weight:normal;color:var(--gray-500)">日</span></div>
+        <div style="font-size:.68rem;color:var(--gray-500);margin-top:2px">今日のノルマ: 0/5問</div>
+      </div>
+      <!-- 今週の学習 -->
+      <div class="card-sm" style="border:1px solid var(--gray-200)">
+        <div style="font-size:.7rem;color:var(--gray-400);margin-bottom:6px">今週の学習</div>
+        <div style="font-size:1.8rem;font-weight:900;color:var(--blue-600)">14<span style="font-size:.85rem;font-weight:normal">時間07分</span></div>
+      </div>
+      <!-- XP -->
+      <div class="card-sm" style="border:1px solid var(--violet-200);background:var(--violet-50)">
+        <div style="font-size:.7rem;color:var(--violet-600);font-weight:700;margin-bottom:6px">XP / レベル</div>
+        <div style="font-size:1.6rem;font-weight:900;color:var(--violet-600)">Lv.12</div>
+        <div style="font-size:.7rem;color:var(--gray-500)">2,340 / 2,500 XP</div>
+      </div>
+    </div>
+
+    <!-- クイズウィジェット -->
+    <div class="card card-neon-violet" style="cursor:pointer" onclick="showPage('quiz')">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <span style="font-size:1.6rem">❓</span>
+        <div style="flex:1">
+          <div style="font-size:.72rem;font-weight:700;color:var(--violet-600);margin-bottom:3px">今日のクイズ</div>
+          <div style="font-size:.9rem;font-weight:700;color:var(--gray-900)">ノルマ: 0 / 5 問</div>
+          <div style="margin-top:6px">
+            <div class="prog-wrap" style="height:6px">
+              <div class="prog-bar" style="width:0%;background:var(--violet-600)"></div>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();showPage('quiz')">挑戦する →</button>
+      </div>
+    </div>
+
+    <!-- 直近7日チャート -->
+    <div class="card card-neon-blue">
+      <div style="font-size:.88rem;font-weight:700;margin-bottom:14px;color:var(--gray-900)">📈 過去7日間の学習時間（分）</div>
+      <div class="chart-wrap" id="dash-chart" style="height:100px;padding-bottom:0"></div>
+    </div>
+
+    <!-- カレンダー -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div style="font-size:.88rem;font-weight:700">📅 8月のカレンダー</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost btn-sm">＜</button>
+          <span style="font-size:.8rem;font-weight:700;line-height:2">2025年8月</span>
+          <button class="btn btn-ghost btn-sm">＞</button>
+        </div>
+      </div>
+      <div class="cal-grid" id="cal-header"></div>
+      <div class="cal-grid" style="margin-top:4px" id="cal-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     振り返り
+══════════════════════════════ -->
+<div class="page" id="page-diary">
+  <div class="page-header">
+    <h1>📔 毎日の振り返り</h1>
+    <div class="sub">学習の習慣を積み上げよう</div>
+  </div>
+  <div class="content space-y">
+    <div class="demo-notice">💡 体験版では入力しても保存されません（UIの動作を確認できます）</div>
+
+    <!-- 今日の状態 -->
+    <div class="card" style="background:var(--amber-50);border-color:var(--amber-200)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:1.5rem">⏰</span>
+        <div>
+          <div style="font-weight:700;font-size:.9rem;color:var(--gray-900)">今日の振り返りはまだです</div>
+          <div style="font-size:.78rem;color:var(--gray-500);margin-top:2px">8月31日（日）の振り返りを記録しましょう</div>
+        </div>
+        <button class="btn btn-blue btn-sm" style="margin-left:auto" onclick="openDiaryModal()">今日を記録 ✍️</button>
+      </div>
+    </div>
+
+    <!-- 書き忘れ日 -->
+    <div class="card" style="background:var(--gray-50);border-color:var(--gray-200)">
+      <div style="font-size:.8rem;font-weight:700;margin-bottom:10px;color:var(--gray-700)">書き忘れた日（5日以内なら追加できます）</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="toast('振り返りフォームを開きます（体験版）','📝')">8/29（金）</button>
+        <button class="btn btn-ghost btn-sm" onclick="toast('振り返りフォームを開きます（体験版）','📝')">8/28（木）</button>
+        <button class="btn btn-ghost btn-sm" onclick="toast('振り返りフォームを開きます（体験版）','📝')">8/27（水）</button>
+      </div>
+    </div>
+
+    <!-- 日記一覧 -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div style="font-size:.88rem;font-weight:700">8月の振り返り一覧</div>
+        <select style="width:auto;padding:4px 8px;font-size:.78rem">
+          <option>2025-08</option><option>2025-07</option>
+        </select>
+      </div>
+      <div id="diary-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     学習計画
+══════════════════════════════ -->
+<div class="page" id="page-plan">
+  <div class="page-header">
+    <h1>📅 学習計画</h1>
+    <div class="sub">今週の学習を計画・記録しよう</div>
+  </div>
+  <div class="content space-y">
+    <div style="display:flex;justify-content:flex-end"><button class="btn btn-blue" onclick="toast('計画を追加（体験版のため保存されません）','📅')">＋ 計画を追加</button></div>
+    <div class="grid-4" id="plan-subj-totals"></div>
+    <div class="card">
+      <div style="font-size:.88rem;font-weight:700;margin-bottom:12px">今週の学習計画</div>
+      <div id="plan-list"></div>
+    </div>
+    <div class="card card-neon-blue">
+      <div style="font-size:.88rem;font-weight:700;margin-bottom:12px">教科別 計画時間（分）</div>
+      <div class="chart-wrap" id="plan-chart" style="height:110px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     テスト対策
+══════════════════════════════ -->
+<div class="page" id="page-test">
+  <div class="page-header">
+    <h1>✏️ テスト対策</h1>
+    <div class="sub">2学期 中間テスト</div>
+  </div>
+  <div class="content space-y">
+    <div class="countdown-card">
+      <div>
+        <div style="font-size:.85rem;opacity:.8;margin-bottom:4px">2学期 中間テスト まで</div>
+        <div class="countdown-num">12</div>
+        <div style="font-size:.9rem;opacity:.85">日</div>
+        <div class="countdown-msg-box">💪 正念場！集中して取り組もう！</div>
+        <div style="font-size:.78rem;opacity:.75;margin-top:8px">試験日: 2025年9月12日（金）</div>
+      </div>
+      <div style="flex-shrink:0;text-align:right">
+        <div style="width:200px">
+          <div style="display:flex;justify-content:space-between;font-size:.72rem;opacity:.8;margin-bottom:5px">
+            <span>対策開始: 8/20</span><span>試験日: 9/12</span>
+          </div>
+          <div class="prog-wrap" style="height:8px">
+            <div class="prog-bar" style="width:48%;background:rgba(255,255,255,.85)"></div>
+          </div>
+          <div style="font-size:.72rem;opacity:.75;margin-top:4px;text-align:right">学習期間 48%経過</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div style="font-size:.88rem;font-weight:700;margin-bottom:12px">教科・出題範囲</div>
+        <div id="test-subjects"></div>
+      </div>
+      <div class="card">
+        <div style="font-size:.88rem;font-weight:700;margin-bottom:12px">ストレス・自信の推移</div>
+        <div id="stress-chart"></div>
+        <div style="display:flex;gap:16px;margin-top:10px;font-size:.72rem;color:var(--gray-400)">
+          <span style="display:flex;align-items:center;gap:4px"><span style="background:var(--red-600);width:16px;height:3px;display:inline-block;border-radius:2px"></span>ストレス</span>
+          <span style="display:flex;align-items:center;gap:4px"><span style="background:var(--green-600);width:16px;height:3px;display:inline-block;border-radius:2px"></span>自信</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     クイズ
+══════════════════════════════ -->
+<div class="page" id="page-quiz">
+  <div class="page-header">
+    <h1>❓ ピアラーニング クイズ</h1>
+    <div class="sub">友達が作ったクイズに挑戦！</div>
+  </div>
+  <div class="content space-y">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchQuizTab('solve',this)">クイズに答える</button>
+      <button class="tab-btn" onclick="switchQuizTab('create',this)">クイズを作る</button>
+    </div>
+
+    <!-- 解く -->
+    <div id="qt-solve">
+      <div class="card card-neon-violet">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <span style="font-size:.78rem;color:var(--gray-500)">今日のノルマ</span>
+          <span id="quiz-prog-txt" style="font-weight:800;color:var(--violet-600)">0 / 5 問</span>
+        </div>
+        <div class="prog-wrap" style="height:8px;margin-bottom:20px">
+          <div class="prog-bar" id="quiz-prog-bar" style="width:0%;background:var(--violet-600)"></div>
+        </div>
+        <div id="quiz-card"></div>
+      </div>
+    </div>
+
+    <!-- 作る -->
+    <div id="qt-create" style="display:none">
+      <div class="card">
+        <div style="font-size:.88rem;font-weight:700;margin-bottom:4px">✏️ クイズを作成する</div>
+        <div style="font-size:.75rem;color:var(--gray-400);margin-bottom:16px;background:var(--gray-50);border-radius:8px;padding:8px 12px;line-height:1.6">
+          作った問題は先生が確認後、みんなのダッシュボードのクイズに出題されます。誰が作ったかは生徒同士には表示されません。
+        </div>
+        <div class="form-group">
+          <label class="form-label">教科</label>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px" id="qc-subj-btns"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">問題文</label>
+          <textarea id="qc-question" rows="3" placeholder="例：(-3) + 5 の答えはどれ？"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">選択肢（正解をクリックして選択）</label>
+          <div id="qc-choices"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">解説（任意）</label>
+          <textarea id="qc-explain" rows="2" placeholder="正解の理由や解き方のポイントを書こう（省略可）"></textarea>
+        </div>
+        <button class="btn btn-blue" style="width:100%" onclick="submitQuizCreate()">📤 投稿する</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     AIレポート
+══════════════════════════════ -->
+<div class="page" id="page-report">
+  <div class="page-header">
+    <h1>📊 AIレポート</h1>
+    <div class="sub">2025年 8月分</div>
+  </div>
+  <div class="content space-y">
+    <div style="display:flex;justify-content:flex-end">
+      <button class="btn btn-ghost btn-sm" onclick="toast('PDF生成は実際のアプリで利用できます','📄')">📄 PDFとして保存</button>
+    </div>
+    <div class="card">
+      <div style="font-size:.88rem;font-weight:700;margin-bottom:16px">教科別 学習時間の割合</div>
+      <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap">
+        <canvas id="pie-canvas" width="160" height="160" style="flex-shrink:0"></canvas>
+        <div id="pie-legend" style="flex:1;min-width:140px"></div>
+      </div>
+    </div>
+    <div class="card card-neon-violet">
+      <div style="font-size:.88rem;font-weight:700;margin-bottom:4px">🤖 AIによる月次分析レポート</div>
+      <div style="font-size:.72rem;color:var(--gray-400);margin-bottom:4px">生成日時: 2025/08/31 09:00 ・ GPT-4o生成</div>
+      <div class="ai-bubble">
+        <strong>【8月の総括】</strong><br>
+        8月は計21日の振り返りを記録し、提出率 <strong>84%</strong> と非常に高い水準を維持しました。<br><br>
+        <strong>📈 良かった点</strong><br>
+        ・数学の学習時間が前月比+35%と大きく伸びました<br>
+        ・気分スコアが月平均 3.8（5段階）と安定しています<br>
+        ・7日連続提出を2回達成しました<br><br>
+        <strong>📌 改善ポイント</strong><br>
+        ・英語の学習頻度が他教科と比べやや少ない傾向があります<br>
+        ・週末の学習時間が平日より平均40%少なく、バランスの改善を推奨します<br><br>
+        <strong>🎯 9月へのアドバイス</strong><br>
+        中間テストに向け、英語・社会を重点的に補強することをおすすめします。現在の取り組み姿勢を維持すれば、目標達成は十分可能です！
+      </div>
+    </div>
+    <div class="card card-neon-blue">
+      <div style="font-size:.88rem;font-weight:700;margin-bottom:12px">週別 学習時間の推移（分）</div>
+      <div class="chart-wrap" id="monthly-chart" style="height:110px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     バッジ・実績
+══════════════════════════════ -->
+<div class="page" id="page-badge">
+  <div class="page-header">
+    <h1>🏆 バッジ・実績</h1>
+    <div class="sub">学習の軌跡を振り返ろう</div>
+  </div>
+  <div class="content space-y">
+    <!-- レベルカード -->
+    <div class="card card-neon-violet">
+      <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+        <div style="position:relative;flex-shrink:0">
+          <div style="width:80px;height:80px;border-radius:50%;background:var(--blue-600);display:flex;align-items:center;justify-content:center;color:#fff;font-size:2rem;font-weight:900;box-shadow:0 4px 16px rgba(37,99,235,.3)">12</div>
+          <div style="position:absolute;inset:-4px;border-radius:50%;border:1px solid var(--violet-200);animation:ping 3s infinite;opacity:.6"></div>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:.72rem;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">現在のレベル</div>
+          <div style="font-size:1.5rem;font-weight:900;color:var(--gray-900)">Lv.12 <span style="color:var(--violet-600)">研究者</span></div>
+          <div class="prog-wrap" style="height:10px;margin-top:8px">
+            <div class="prog-bar" style="width:93.6%;background:linear-gradient(90deg,var(--blue-600),var(--violet-600))"></div>
+          </div>
+          <div style="font-size:.72rem;color:var(--gray-400);margin-top:4px">次のレベルまで 160 XP（2,340 / 2,500）</div>
+        </div>
+      </div>
+      <div class="grid-4" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--gray-100)">
+        <div style="text-align:center"><div style="font-size:1.4rem;font-weight:900;color:var(--blue-600)">12<span style="font-size:.8rem;font-weight:normal;color:var(--gray-400)">日</span></div><div style="font-size:.68rem;color:var(--gray-400)">日記連続提出</div></div>
+        <div style="text-align:center"><div style="font-size:1.4rem;font-weight:900;color:var(--green-600)">22<span style="font-size:.8rem;font-weight:normal;color:var(--gray-400)">日</span></div><div style="font-size:.68rem;color:var(--gray-400)">最長連続記録</div></div>
+        <div style="text-align:center"><div style="font-size:1.4rem;font-weight:900;color:var(--amber-600)">41<span style="font-size:.8rem;font-weight:normal;color:var(--gray-400)">日</span></div><div style="font-size:.68rem;color:var(--gray-400)">総提出日数</div></div>
+        <div style="text-align:center"><div style="font-size:1.4rem;font-weight:900;color:var(--violet-600)">87<span style="font-size:.8rem;font-weight:normal;color:var(--gray-400)">問</span></div><div style="font-size:.68rem;color:var(--gray-400)">クイズ回答</div></div>
+      </div>
+    </div>
+
+    <!-- 今月のバッジ -->
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+        <span style="font-size:.9rem;font-weight:700">8月のバッジ</span>
+        <span style="font-size:.85rem;font-weight:700;color:var(--rose-600)">4/7</span>
+        <span style="margin-left:auto;font-size:.7rem;color:var(--gray-400)">🔄 毎月1日にリセット（次まで1日）</span>
+      </div>
+      <div class="grid-3" id="monthly-badge-grid"></div>
+    </div>
+
+    <!-- バッジコレクション -->
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="font-size:.9rem;font-weight:700">バッジコレクション</span>
+        <span style="font-size:.85rem;font-weight:700;color:var(--amber-600)">5/8</span>
+      </div>
+      <div class="grid-4" id="badge-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     教師ダッシュボード
+══════════════════════════════ -->
+<div class="page" id="page-teacher">
+  <div class="page-header">
+    <h1>👩‍🏫 教師ダッシュボード</h1>
+    <div class="sub">3年A組 / 2025年8月31日（日）</div>
+  </div>
+  <div class="content-wide space-y">
+    <!-- 緊急バナー -->
+    <div class="critical-banner">
+      <div style="display:flex;align-items:flex-start;gap:12px">
+        <span style="font-size:1.5rem;animation:pulse 1s infinite">🔴</span>
+        <div style="flex:1">
+          <div style="font-weight:700;color:var(--red-600);margin-bottom:6px">要緊急対応（2件）</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <span class="badge badge-red">山田けんじ</span>
+            <span class="badge badge-red">鈴木はると</span>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="showPage('alert')">対応する →</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid-4">
+      <div class="stat-card" style="border-top:3px solid var(--blue-600)" onclick="toast('生徒一覧は実際のアプリで確認できます')">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px">
+          <div class="stat-card-title">生徒数</div>
+          <div class="stat-card-icon" style="background:var(--blue-50)">👥</div>
+        </div>
+        <div class="stat-card-val" style="color:var(--blue-600)">32</div>
+      </div>
+      <div class="stat-card" style="border-top:3px solid var(--pink-600)" onclick="showPage('alert')">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px">
+          <div class="stat-card-title">未解決アラート</div>
+          <div class="stat-card-icon" style="background:var(--pink-100)">🚨</div>
+        </div>
+        <div class="stat-card-val" style="color:var(--red-600)">4</div>
+        <div class="stat-card-sub">うち緊急 2件</div>
+      </div>
+      <!-- 提出率 -->
+      <div class="stat-card" style="border-top:3px solid var(--green-600)">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px">
+          <div class="stat-card-title">提出率</div>
+          <div class="stat-card-icon" style="background:var(--green-50)">📊</div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-end">
+          <div><div style="font-size:.68rem;color:var(--gray-400)">昨日</div><div style="font-size:1.1rem;font-weight:700;color:var(--gray-500)">82%</div></div>
+          <div><div style="font-size:.68rem;color:var(--gray-400)">今日</div><div style="font-size:1.6rem;font-weight:900;color:var(--green-600)">89%</div></div>
+          <div><div style="font-size:.68rem;color:var(--gray-400)">週平均</div><div style="font-size:1.1rem;font-weight:700;color:var(--gray-500)">85%</div></div>
+        </div>
+      </div>
+      <!-- 気分 -->
+      <div class="stat-card" style="border-top:3px solid var(--amber-600)">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px">
+          <div class="stat-card-title">クラス気分</div>
+          <div class="stat-card-icon" style="background:var(--amber-50)">😊</div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-end">
+          <div><div style="font-size:.68rem;color:var(--gray-400)">昨日</div><div style="font-size:1.1rem;font-weight:700;color:var(--gray-500)">3.4</div></div>
+          <div><div style="font-size:.68rem;color:var(--gray-400)">今日</div><div style="font-size:1.6rem;font-weight:900;color:var(--amber-600)">3.6</div></div>
+          <div><div style="font-size:.68rem;color:var(--gray-400)">週平均</div><div style="font-size:1.1rem;font-weight:700;color:var(--gray-500)">3.5</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- グラフ 2カラム -->
+    <div class="grid-2">
+      <div class="card card-neon-blue">
+        <div style="font-size:.88rem;font-weight:700;margin-bottom:4px">今週の提出率</div>
+        <div style="font-size:.72rem;color:var(--gray-400);margin-bottom:12px">直近7授業日</div>
+        <div class="chart-wrap" id="teacher-submit-chart" style="height:110px"></div>
+      </div>
+      <div class="card card-neon-violet">
+        <div style="font-size:.88rem;font-weight:700;margin-bottom:4px">クラス平均気分推移</div>
+        <div style="font-size:.72rem;color:var(--gray-400);margin-bottom:12px">直近7授業日</div>
+        <div class="chart-wrap" id="teacher-mood-chart" style="height:110px;align-items:flex-end"></div>
+      </div>
+    </div>
+
+    <!-- クイズ状況 -->
+    <div class="card card-neon-amber">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div style="font-size:.88rem;font-weight:700">今日のクイズ状況</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:24px;margin-bottom:12px;flex-wrap:wrap">
+        <div style="text-align:center">
+          <div style="font-size:1.8rem;font-weight:900;color:var(--amber-600)">18<span style="font-size:.85rem;font-weight:normal;color:var(--gray-400)">/32人</span></div>
+          <div style="font-size:.68rem;color:var(--gray-400)">取り組み中</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:1.8rem;font-weight:900;color:var(--green-600)">11<span style="font-size:.85rem;font-weight:normal;color:var(--gray-400)">人</span></div>
+          <div style="font-size:.68rem;color:var(--gray-400)">ノルマ達成（5問+）</div>
+        </div>
+        <div style="flex:1;min-width:120px">
+          <div class="prog-wrap" style="height:10px">
+            <div class="prog-bar" style="width:56%;background:var(--amber-400)"></div>
+          </div>
+          <div style="font-size:.7rem;color:var(--gray-400);margin-top:4px">参加率 56%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 生徒一覧 -->
+    <div class="card" style="padding:0;overflow:hidden">
+      <div style="padding:16px 20px 12px;font-size:.88rem;font-weight:700;border-bottom:1px solid var(--gray-100)">生徒一覧</div>
+      <div id="student-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     アラート管理
+══════════════════════════════ -->
+<div class="page" id="page-alert">
+  <div class="page-header">
+    <h1>🚨 アラート管理</h1>
+    <div class="sub">生徒の状況を自動検知・確認</div>
+  </div>
+  <div class="content space-y">
+    <div class="card card-neon-blue">
+      <div style="display:flex;align-items:flex-start;gap:12px">
+        <span style="font-size:1.4rem;flex-shrink:0">💡</span>
+        <div>
+          <div style="font-weight:700;font-size:.88rem;margin-bottom:4px">アラートの使い方</div>
+          <div style="font-size:.78rem;color:var(--gray-500);line-height:1.7">下の「設定」で条件を設定します。「今すぐチェック」ボタンを押すと、条件に引っかかる生徒を自動で検出してアラートを登録します。登録されたアラートは対応後に「解決済み」にしてください。</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <button class="btn btn-blue" onclick="toast('アラートチェックを実行しました（体験版）','🔍')">🔍 今すぐアラートをチェック</button>
+      <div style="display:flex;gap:8px;flex:1;flex-wrap:wrap" id="alert-level-btns"></div>
+    </div>
+
+    <div id="alert-list"></div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- 振り返りモーダル -->
+<div class="modal-bg" id="diary-modal">
+  <div class="modal">
+    <div style="font-size:1rem;font-weight:800;margin-bottom:4px">今日の振り返りを記録</div>
+    <div style="font-size:.78rem;color:var(--gray-400);margin-bottom:16px">8月31日（日）</div>
+    <div class="form-group">
+      <label class="form-label">今日の気分</label>
+      <div class="mood-row" id="modal-mood-row"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">学習内容・できたこと・改善点 <span style="color:var(--red-600)">*</span></label>
+      <textarea id="modal-diary-text" rows="5" placeholder="例：数学の二次関数の復習をした。解き方のパターンが掴めてきた。明日は応用問題に挑戦したい。"></textarea>
+      <div style="font-size:.7rem;color:var(--gray-400);margin-top:4px" id="modal-char-count">0文字</div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="closeDiaryModal()">キャンセル</button>
+      <button class="btn btn-blue" onclick="submitDiary()">💾 保存する</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-area"></div>
+
+<style>
+@keyframes ping{0%{transform:scale(1);opacity:.6}70%{transform:scale(1.15);opacity:0}100%{transform:scale(1.15);opacity:0}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+</style>
+
+<script>
+// ════════════════════════════
+// DATA
+// ════════════════════════════
+const SUBJECTS    = ['国語','社会','数学','理科','英語']
+const SUBJ_COLORS = {'国語':'#ef4444','社会':'#f97316','数学':'#2563eb','理科':'#059669','英語':'#7c3aed'}
+const MOOD_EMOJI  = ['','😢','😞','😐','😊','😄']
+const MOOD_LABEL  = ['','とても悪い','悪い','普通','良い','とても良い']
+const MOOD_CLS    = ['','sel-1','sel-2','sel-3','sel-4','sel-5']
+const MOOD_COLOR  = ['','#EF4444','#F97316','#3B82F6','#10B981','#22C55E']
+const MOOD_BG     = ['','#FEF2F2','#FFFBEB','#EFF6FF','#ECFDF5','#ECFDF5']
+
+const PIE_DATA = [
+  {sub:'数学',min:280,color:'#2563EB'},
+  {sub:'英語',min:160,color:'#7C3AED'},
+  {sub:'国語',min:180,color:'#EF4444'},
+  {sub:'理科',min:140,color:'#059669'},
+  {sub:'社会',min:87,color:'#F97316'},
+]
+
+const DIARY_DATA = [
+  {day:30,mood:4,text:'英語の長文読解を30分やった。関係代名詞のところが少し難しかった。'},
+  {day:29,mood:3,text:'数学の二次関数を復習。解き方のパターンは分かってきた。'},
+  {day:28,mood:5,text:'理科の化学反応式をまとめた。先生の解説が分かりやすかった！'},
+  {day:27,mood:4,text:'社会の地理統計をノートにまとめ直した。'},
+  {day:26,mood:2,text:'あまり集中できなかった。少し疲れていたかも。明日頑張る。'},
+  {day:25,mood:4,text:'国語の現代文を2題解いた。記述問題の書き方が少し分かった。'},
+  {day:24,mood:4,text:'数学の応用問題プリントを解いた。'},
+]
+
+const PLAN_DATA = [
+  {sub:'数学',content:'二次関数の復習',min:60,date:'9/1',done:true},
+  {sub:'英語',content:'単語テスト100語',min:45,date:'9/1',done:false},
+  {sub:'国語',content:'現代文読解',min:40,date:'9/2',done:false},
+  {sub:'理科',content:'化学反応式まとめ',min:50,date:'9/2',done:true},
+  {sub:'社会',content:'地理・統計整理',min:30,date:'9/3',done:false},
+  {sub:'数学',content:'応用問題プリント',min:60,date:'9/3',done:false},
+]
+
+const TEST_SUBJS = [
+  {name:'国語',range:'現代文3題・古文2題',color:'#ef4444',advice:'古文は単語帳を毎日10個確認すること。'},
+  {name:'社会',range:'日本の地形・気候',color:'#f97316',advice:'地図帳を使いながら統計データを確認。'},
+  {name:'数学',range:'二次関数・三角比',color:'#2563eb',advice:'公式を暗記するだけでなく、図を描いて考える習慣を。'},
+  {name:'理科',range:'化学変化とイオン',color:'#059669',advice:'電気分解の仕組みを図で覚えよう。'},
+  {name:'英語',range:'Unit4〜6・関係代名詞',color:'#7c3aed',advice:'長文は先に設問を読んでから本文を読もう。'},
+]
+
+const QUIZ_DATA = [
+  {q:'二次方程式 x²-5x+6=0 の解はどれ？',choices:['x=2, x=3','x=1, x=6','x=-2, x=-3','x=2, x=-3'],ans:0,sub:'数学',explain:'x²-5x+6=(x-2)(x-3)=0 より x=2, x=3'},
+  {q:'Be動詞の過去形で正しい組み合わせは？',choices:['is/am→was, are→were','am→wased','is→were','be→beed'],ans:0,sub:'英語',explain:'is/am の過去形は was、are の過去形は were です。'},
+  {q:'光合成の原料として正しい組み合わせは？',choices:['二酸化炭素と水','酸素と水','窒素と光','水と塩分'],ans:0,sub:'理科',explain:'光合成：CO₂ + H₂O → 有機物 + O₂（光エネルギー使用）'},
+  {q:'江戸幕府を開いた人物は？',choices:['徳川家康','豊臣秀吉','織田信長','徳川秀忠'],ans:0,sub:'社会',explain:'1603年、徳川家康が征夷大将軍に就任し江戸幕府を開いた。'},
+  {q:'日本語の母音の数は？',choices:['5つ','3つ','4つ','6つ'],ans:0,sub:'国語',explain:'あ(a)・い(i)・う(u)・え(e)・お(o)の5つが母音です。'},
+]
+
+const STUDENTS = [
+  {name:'田中さくら',mood:5,streak:12,done:true, alert:false,avatar:'🌸'},
+  {name:'山田けんじ',mood:2,streak:1, done:true, alert:true, avatar:'😰',alertMsg:'振り返りに深刻な表現が検出されました'},
+  {name:'佐藤みか',  mood:4,streak:8, done:true, alert:false,avatar:'📚'},
+  {name:'鈴木はると',mood:1,streak:0, done:false,alert:true, avatar:'😟',alertMsg:'気分スコアが3日連続最低値'},
+  {name:'中村あかね',mood:4,streak:15,done:true, alert:false,avatar:'⭐'},
+  {name:'小林たろう',mood:3,streak:5, done:true, alert:false,avatar:'🎯'},
+  {name:'伊藤ゆか',  mood:5,streak:22,done:true, alert:false,avatar:'🌟'},
+  {name:'渡辺こうた',mood:2,streak:2, done:true, alert:true, avatar:'😞',alertMsg:'ストレス指数が急上昇'},
+]
+
+const ALERTS = [
+  {level:'critical',name:'山田けんじ',type:'キーワード検知',msg:'振り返りに「死にたい」に類する表現が検出されました。早急な対応が必要です。',emoji:'🔴',color:'#DC2626',bg:'#FEF2F2',border:'rgba(220,38,38,.3)',date:'本日 08:15',resolved:false},
+  {level:'high',    name:'鈴木はると', type:'気分スコア低下',msg:'気分スコアが3日連続で1（最低値）を記録。未提出も続いています。面談を推奨します。',emoji:'🟠',color:'#EA580C',bg:'#FFF7ED',border:'rgba(234,88,12,.3)',date:'昨日',resolved:false},
+  {level:'high',    name:'渡辺こうた', type:'ストレス急上昇',msg:'ストレス指数が急上昇（先週比+60%）。テスト期間のプレッシャーが影響している可能性があります。',emoji:'🟠',color:'#EA580C',bg:'#FFF7ED',border:'rgba(234,88,12,.3)',date:'2日前',resolved:false},
+  {level:'medium',  name:'木村りょう', type:'未提出継続',msg:'3日連続で振り返りが未提出です。声かけを推奨します。',emoji:'🟡',color:'#D97706',bg:'#FFFBEB',border:'rgba(217,119,6,.3)',date:'3日前',resolved:true},
+]
+
+const BADGES = [
+  {icon:'⭐',name:'継続の星',  desc:'7日連続提出',        earned:true},
+  {icon:'🔥',name:'超継続者',  desc:'14日連続提出',       earned:false},
+  {icon:'📚',name:'学習マスター',desc:'総学習1000分突破',  earned:true},
+  {icon:'🔍',name:'反省の達人',desc:'振り返り30回達成',   earned:true},
+  {icon:'📅',name:'計画の神',  desc:'7日連続で計画入力',  earned:true},
+  {icon:'⚔️',name:'テスト戦士',desc:'テスト振り返り5回+', earned:false},
+  {icon:'⏰',name:'時間の達人',desc:'1日180分以上の学習',  earned:true},
+  {icon:'📊',name:'月次完走者',desc:'月末レポート生成',    earned:false},
+]
+
+const MONTHLY_BADGES = [
+  {icon:'⚡',name:'ダッシュ',       desc:'今月7日連続振り返り',  earned:true},
+  {icon:'🔥',name:'マラソン',       desc:'今月14日連続振り返り', earned:false},
+  {icon:'🌱',name:'ウォームアップ', desc:'今月100分の学習',      earned:true},
+  {icon:'🌿',name:'アクティブ',     desc:'今月500分の学習',      earned:true},
+  {icon:'🌟',name:'ハイパフォーマー',desc:'今月1500分の学習',    earned:false},
+  {icon:'📆',name:'習慣化',         desc:'今月15日以上振り返り', earned:true},
+  {icon:'🎨',name:'バランス学習',   desc:'今月全教科を学習',     earned:false},
+]
+
+// ════════════════════════════
+// NAV
+// ════════════════════════════
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'))
+  document.getElementById('page-'+id).classList.add('active')
+  const btn=[...document.querySelectorAll('.nav-btn')].find(b=>b.getAttribute('onclick')?.includes("'"+id+"'"))
+  if(btn)btn.classList.add('active')
+
+  const renders={
+    dashboard:renderDashboard,
+    plan:renderPlan,
+    test:renderTest,
+    quiz:renderQuiz,
+    report:renderReport,
+    badge:renderBadge,
+    teacher:renderTeacher,
+    alert:renderAlerts,
+    diary:renderDiary,
+  }
+  if(renders[id])renders[id]()
+}
+
+// ════════════════════════════
+// TOAST
+// ════════════════════════════
+function toast(msg,icon='✅'){
+  const el=document.createElement('div')
+  el.className='toast'
+  el.innerHTML=`<span>${icon}</span><span>${msg}</span>`
+  document.getElementById('toast-area').appendChild(el)
+  setTimeout(()=>{el.classList.add('hide');setTimeout(()=>el.remove(),350)},2800)
+}
+
+// ════════════════════════════
+// DASHBOARD
+// ════════════════════════════
+function renderDashboard(){
+  // 週間学習チャート
+  const days=['火','水','木','金','土','日','月']
+  const mins=[120,95,0,180,60,145,210]
+  const mc=document.getElementById('dash-chart')
+  if(mc){
+    const mx=Math.max(...mins,1)
+    mc.innerHTML=days.map((d,i)=>`
+      <div class="chart-col">
+        <div class="chart-val" style="color:${mins[i]?'var(--blue-600)':'var(--gray-300)'}">
+          ${mins[i]?mins[i]:''}
+        </div>
+        <div class="chart-bar" style="height:${(mins[i]/mx)*80}px;background:${mins[i]?'var(--blue-600)':'var(--gray-200)'}"></div>
+        <div class="chart-lbl">${d}</div>
+      </div>`).join('')
+  }
+
+  // カレンダー（8月）
+  const hdrEl=document.getElementById('cal-header')
+  const calEl=document.getElementById('cal-grid')
+  if(!hdrEl||!calEl)return
+  const days7=['日','月','火','水','木','金','土']
+  hdrEl.innerHTML=days7.map(d=>`<div class="cal-day-hdr">${d}</div>`).join('')
+
+  const moodMap={}
+  DIARY_DATA.forEach(d=>moodMap[d.day]=d.mood)
+  const first=5 // Aug 1 = Friday
+  let html=''
+  for(let i=0;i<first;i++) html+=`<div></div>`
+  for(let d=1;d<=31;d++){
+    const m=moodMap[d]
+    const isToday=d===31
+    const style=m?`background:${MOOD_BG[m]};border-color:${MOOD_COLOR[m]}30`:`background:var(--gray-50)`
+    html+=`<div class="cal-cell ${isToday?'today':''} ${m?'has-diary':''}" style="${style}" onclick="toast('${d}日の振り返りを表示（体験版）','📔')">
+      <span style="font-size:${m?'1.1rem':'.75rem'};line-height:1">${m?MOOD_EMOJI[m]:d}</span>
+      ${m?`<span style="font-size:.6rem;color:var(--gray-400)">${d}</span>`:''}
+    </div>`
+  }
+  calEl.innerHTML=html
+}
+
+// ════════════════════════════
+// DIARY
+// ════════════════════════════
+function renderDiary(){
+  const el=document.getElementById('diary-list')
+  if(!el)return
+  el.innerHTML=DIARY_DATA.map(d=>`
+    <div class="card-sm" style="margin-bottom:10px;border:1px solid var(--gray-200)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="font-size:1.2rem">${MOOD_EMOJI[d.mood]}</span>
+        <span style="font-size:.85rem;font-weight:700;color:var(--gray-900)">8月${d.day}日</span>
+        <span class="badge" style="background:${MOOD_BG[d.mood]};color:${MOOD_COLOR[d.mood]}">${MOOD_LABEL[d.mood]}</span>
+        <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="toast('編集フォームを開きます（体験版）','✏️')">編集</button>
+      </div>
+      <div style="font-size:.83rem;color:var(--gray-700);line-height:1.7">${d.text}</div>
+    </div>`).join('')
+}
+
+// 振り返りモーダル
+let selectedMood=3
+function renderMoodSelector(containerId){
+  const el=document.getElementById(containerId)
+  if(!el)return
+  el.innerHTML=MOOD_EMOJI.slice(1).map((e,i)=>{
+    const v=i+1
+    return `<button class="mood-btn ${v===selectedMood?MOOD_CLS[v]:''}" onclick="selectMood(${v},this)"
+      style="${v===selectedMood?`border-color:${MOOD_COLOR[v]}30;background:${MOOD_BG[v]};color:${MOOD_COLOR[v]}`:''}"
+    ><span class="mood-emoji">${e}</span>${MOOD_LABEL[v]}</button>`
+  }).join('')
+}
+
+function selectMood(v,el){
+  selectedMood=v
+  document.querySelectorAll('.mood-btn').forEach(b=>{
+    b.className='mood-btn'
+    b.style.cssText=''
+  })
+  el.classList.add(MOOD_CLS[v])
+  el.style.borderColor=MOOD_COLOR[v]+'30'
+  el.style.background=MOOD_BG[v]
+  el.style.color=MOOD_COLOR[v]
+}
+
+function openDiaryModal(){
+  document.getElementById('diary-modal').classList.add('open')
+  renderMoodSelector('modal-mood-row')
+  document.getElementById('modal-diary-text').value=''
+  document.getElementById('modal-char-count').textContent='0文字'
+  document.getElementById('modal-diary-text').oninput=function(){
+    document.getElementById('modal-char-count').textContent=this.value.length+'文字'
+  }
+}
+function closeDiaryModal(){
+  document.getElementById('diary-modal').classList.remove('open')
+}
+function submitDiary(){
+  const txt=document.getElementById('modal-diary-text').value.trim()
+  if(!txt){toast('振り返りを入力してください','⚠️');return}
+  closeDiaryModal()
+  toast('振り返りを保存しました！ +20 XP ✨（体験版のため保存されません）')
+}
+
+// ════════════════════════════
+// PLAN
+// ════════════════════════════
+function renderPlan(){
+  const totals=document.getElementById('plan-subj-totals')
+  const list=document.getElementById('plan-list')
+  const chart=document.getElementById('plan-chart')
+  if(!totals||!list||!chart)return
+
+  const sum={}
+  SUBJECTS.forEach(s=>sum[s]=0)
+  PLAN_DATA.forEach(p=>sum[p.sub]=(sum[p.sub]||0)+p.min)
+
+  totals.innerHTML=SUBJECTS.map(s=>`
+    <div class="stat-card" style="border-top:3px solid ${SUBJ_COLORS[s]};padding:14px">
+      <div class="stat-card-title">${s}</div>
+      <div class="stat-card-val" style="color:${SUBJ_COLORS[s]};font-size:1.5rem">${sum[s]||0}</div>
+      <div class="stat-card-sub">分</div>
+    </div>`).join('')
+
+  list.innerHTML=PLAN_DATA.map(p=>`
+    <div class="plan-item" style="border-left-color:${SUBJ_COLORS[p.sub]}">
+      <div style="width:10px;height:10px;border-radius:50%;background:${SUBJ_COLORS[p.sub]};flex-shrink:0"></div>
+      <div style="flex:1">
+        <div style="font-size:.85rem;font-weight:700;color:var(--gray-900)">${p.sub}｜${p.content}</div>
+        <div style="font-size:.72rem;color:var(--gray-400);margin-top:2px">${p.date} · ${p.min}分${p.done?' <span style="color:var(--green-600);font-weight:700">✓ 完了</span>':''}</div>
+      </div>
+    </div>`).join('')
+
+  const mx=Math.max(...SUBJECTS.map(s=>sum[s]||0),1)
+  chart.innerHTML=SUBJECTS.map(s=>`
+    <div class="chart-col">
+      <div class="chart-val" style="color:${SUBJ_COLORS[s]}">${sum[s]||0}</div>
+      <div class="chart-bar" style="height:${((sum[s]||0)/mx)*85}px;background:${SUBJ_COLORS[s]}"></div>
+      <div class="chart-lbl">${s}</div>
+    </div>`).join('')
+}
+
+// ════════════════════════════
+// TEST
+// ════════════════════════════
+function renderTest(){
+  const ts=document.getElementById('test-subjects')
+  const sc=document.getElementById('stress-chart')
+  if(!ts||!sc)return
+
+  ts.innerHTML=TEST_SUBJS.map(t=>`
+    <div class="subject-card" style="border-left-color:${t.color}">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span class="badge" style="background:${t.color}20;color:${t.color}">${t.name}</span>
+        <span style="font-size:.75rem;color:var(--gray-400)">${t.range}</span>
+      </div>
+      <div style="font-size:.75rem;color:var(--gray-500);line-height:1.5">💡 ${t.advice}</div>
+      <div style="margin-top:8px">
+        <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--gray-400);margin-bottom:3px">
+          <span>学習進捗</span><span>${Math.round(Math.random()*40+40)}%</span>
+        </div>
+        <div class="prog-wrap" style="height:6px"><div class="prog-bar" style="width:${Math.round(Math.random()*40+40)}%;background:${t.color}"></div></div>
+      </div>
+    </div>`).join('')
+
+  const stressD=[55,60,58,65,62,70,68]
+  const confD  =[55,52,57,54,58,55,60]
+  const d7=['8/25','8/26','8/27','8/28','8/29','8/30','8/31']
+  sc.innerHTML=d7.map((d,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <div style="font-size:.68rem;color:var(--gray-400);width:34px;flex-shrink:0">${d}</div>
+      <div style="flex:1">
+        <div style="display:flex;gap:3px;align-items:center;margin-bottom:2px">
+          <div class="prog-wrap" style="height:5px;flex:1"><div class="prog-bar" style="width:${stressD[i]}%;background:#EF4444"></div></div>
+          <span style="font-size:.65rem;color:var(--gray-400);min-width:24px;text-align:right">${stressD[i]}%</span>
+        </div>
+        <div style="display:flex;gap:3px;align-items:center">
+          <div class="prog-wrap" style="height:5px;flex:1"><div class="prog-bar" style="width:${confD[i]}%;background:#059669"></div></div>
+          <span style="font-size:.65rem;color:var(--gray-400);min-width:24px;text-align:right">${confD[i]}%</span>
+        </div>
+      </div>
+    </div>`).join('')
+}
+
+// ════════════════════════════
+// QUIZ
+// ════════════════════════════
+let qIdx=0,qDone=0,qSelected=null
+
+function switchQuizTab(tab,btn){
+  document.querySelectorAll('#qt-solve,#qt-create').forEach(e=>e.style.display='none')
+  document.querySelectorAll('#page-quiz .tab-btn').forEach(b=>b.classList.remove('active'))
+  document.getElementById('qt-'+tab).style.display=''
+  btn.classList.add('active')
+}
+
+function renderQuiz(){
+  renderQuizProgress()
+  renderQuizCard()
+  renderQuizCreateForm()
+}
+
+function renderQuizProgress(){
+  const done=Math.min(qDone,5)
+  const el=document.getElementById('quiz-prog-bar')
+  const txt=document.getElementById('quiz-prog-txt')
+  if(el)el.style.width=(done/5*100)+'%'
+  if(txt)txt.textContent=`${done} / 5 問`
+}
+
+function renderQuizCard(){
+  const el=document.getElementById('quiz-card')
+  if(!el)return
+  if(qDone>=5){
+    el.innerHTML=`<div style="text-align:center;padding:24px">
+      <div style="font-size:2.5rem;margin-bottom:10px">🎉</div>
+      <div style="font-size:1.1rem;font-weight:800;color:var(--gray-900);margin-bottom:4px">今日のノルマ達成！</div>
+      <div style="font-size:.8rem;color:var(--gray-400);margin-bottom:16px">+25 XP 獲得（体験版のため保存されません）</div>
+      <button class="btn btn-blue" onclick="qIdx=0;qDone=0;renderQuiz()">もう一度挑戦する</button>
+    </div>`
+    return
+  }
+  const q=QUIZ_DATA[qIdx%QUIZ_DATA.length]
+  el.innerHTML=`
+    <div class="badge badge-gray" style="margin-bottom:10px">${q.sub} · 問題 ${qDone+1}</div>
+    <div style="font-size:1rem;font-weight:700;color:var(--gray-900);margin-bottom:16px;line-height:1.6">${q.q}</div>
+    <div>
+      ${q.choices.map((c,i)=>`
+        <div class="quiz-opt" onclick="answerQuiz(${i},${q.ans})" id="qopt${i}">
+          <div class="quiz-opt-label">${['①','②','③','④'][i]}</div>
+          <span>${c}</span>
+        </div>`).join('')}
+    </div>
+    <div id="quiz-explain" style="display:none;margin-top:12px;padding:12px;background:var(--green-50);border:1px solid var(--green-200);border-radius:10px;font-size:.8rem;color:var(--green-600);line-height:1.7">
+      💡 ${q.explain}
+    </div>`
+}
+
+function answerQuiz(sel,ans){
+  document.querySelectorAll('.quiz-opt').forEach(e=>e.classList.add('disabled'))
+  const optEls=document.querySelectorAll('.quiz-opt')
+  optEls[ans].classList.add('correct')
+  if(sel!==ans)optEls[sel].classList.add('wrong')
+  document.getElementById('quiz-explain').style.display=''
+  qDone++
+  renderQuizProgress()
+  setTimeout(()=>{qIdx++;renderQuizCard()},1800)
+}
+
+let qcSelected=0
+function renderQuizCreateForm(){
+  const el=document.getElementById('qc-subj-btns')
+  if(!el)return
+  el.innerHTML=SUBJECTS.map((s,i)=>`
+    <button class="btn btn-sm" onclick="qcSelected=${i};renderQuizCreateForm()"
+      style="background:${i===qcSelected?SUBJ_COLORS[s]:'var(--gray-100)'};color:${i===qcSelected?'#fff':'var(--gray-600)'};border:none"
+    >${s}</button>`).join('')
+
+  const choices=document.getElementById('qc-choices')
+  if(choices&&!choices.innerHTML) choices.innerHTML=[0,1,2,3].map(i=>`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <input type="radio" name="qc-ans" value="${i}" id="qr${i}" style="width:auto;accent-color:var(--green-600)">
+      <input type="text" placeholder="選択肢${['①','②','③','④'][i]}" style="flex:1">
+    </div>`).join('')
+}
+
+function submitQuizCreate(){
+  const q=document.getElementById('qc-question')?.value.trim()
+  if(!q){toast('問題文を入力してください','⚠️');return}
+  toast('クイズを投稿しました！先生の確認後に公開されます（体験版）','✏️')
+  document.getElementById('qc-question').value=''
+}
+
+// ════════════════════════════
+// REPORT
+// ════════════════════════════
+function renderReport(){
+  const cv=document.getElementById('pie-canvas')
+  if(!cv)return
+  const ctx=cv.getContext('2d')
+  const total=PIE_DATA.reduce((s,d)=>s+d.min,0)
+  let start=0
+  ctx.clearRect(0,0,160,160)
+  PIE_DATA.forEach(d=>{
+    const slice=d.min/total*2*Math.PI
+    ctx.beginPath();ctx.moveTo(80,80)
+    ctx.arc(80,80,70,start,start+slice);ctx.closePath()
+    ctx.fillStyle=d.color;ctx.fill()
+    start+=slice
+  })
+  ctx.beginPath();ctx.arc(80,80,36,0,2*Math.PI)
+  ctx.fillStyle='#fff';ctx.fill()
+  ctx.fillStyle='#111827';ctx.font='bold 11px sans-serif'
+  ctx.textAlign='center';ctx.textBaseline='middle'
+  ctx.fillText(total+'分',80,80)
+
+  const lg=document.getElementById('pie-legend')
+  if(lg)lg.innerHTML=PIE_DATA.map(d=>`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:.82rem">
+      <span style="background:${d.color};width:12px;height:12px;border-radius:3px;display:inline-block;flex-shrink:0"></span>
+      <span style="flex:1;color:var(--gray-700)">${d.sub}</span>
+      <span style="font-weight:700">${d.min}分</span>
+      <span style="color:var(--gray-400)">(${Math.round(d.min/total*100)}%)</span>
+    </div>`).join('')
+
+  const mc=document.getElementById('monthly-chart')
+  if(mc){
+    const weeks=['第1週','第2週','第3週','第4週']
+    const vals=[180,230,195,242]
+    const mx=Math.max(...vals)
+    mc.innerHTML=weeks.map((w,i)=>`
+      <div class="chart-col">
+        <div class="chart-val" style="color:var(--violet-600)">${vals[i]}</div>
+        <div class="chart-bar" style="height:${(vals[i]/mx)*85}px;background:var(--violet-600)"></div>
+        <div class="chart-lbl">${w}</div>
+      </div>`).join('')
+  }
+}
+
+// ════════════════════════════
+// BADGE
+// ════════════════════════════
+function renderBadge(){
+  const monthly=document.getElementById('monthly-badge-grid')
+  const grid=document.getElementById('badge-grid')
+  if(!monthly||!grid)return
+
+  monthly.innerHTML=MONTHLY_BADGES.map(b=>`
+    <div class="badge-card ${b.earned?'earned-monthly':'locked'}">
+      <span class="badge-icon">${b.earned?b.icon:'🔒'}</span>
+      <div class="${b.earned?'badge-name':'badge-name-locked'}">${b.name}</div>
+      <div class="badge-desc">${b.desc}</div>
+    </div>`).join('')
+
+  grid.innerHTML=BADGES.map(b=>`
+    <div class="badge-card ${b.earned?'earned':'locked'}">
+      <span class="badge-icon">${b.earned?b.icon:'🔒'}</span>
+      <div class="${b.earned?'badge-name':'badge-name-locked'}">${b.name}</div>
+      <div class="badge-desc">${b.desc}</div>
+    </div>`).join('')
+}
+
+// ════════════════════════════
+// TEACHER
+// ════════════════════════════
+function renderTeacher(){
+  const sc=document.getElementById('teacher-submit-chart')
+  const mc=document.getElementById('teacher-mood-chart')
+  const sl=document.getElementById('student-list')
+  if(!sc||!mc||!sl)return
+
+  const days=['8/25','8/26','8/27','8/28','8/29','8/30','8/31']
+  const rates=[82,88,79,91,85,87,89]
+  const mx=100
+  sc.innerHTML=days.map((d,i)=>`
+    <div class="chart-col">
+      <div class="chart-val" style="color:var(--blue-600)">${rates[i]}</div>
+      <div class="chart-bar" style="height:${(rates[i]/mx)*85}px;background:var(--blue-600);opacity:.8"></div>
+      <div class="chart-lbl">${d.slice(2)}</div>
+    </div>`).join('')
+
+  const moods=[3.4,3.8,3.2,3.9,3.5,3.4,3.6]
+  const mmx=5
+  mc.innerHTML=days.map((d,i)=>`
+    <div class="chart-col">
+      <div class="chart-val" style="color:var(--violet-600)">${moods[i]}</div>
+      <div class="chart-bar" style="height:${(moods[i]/mmx)*85}px;background:var(--violet-600);opacity:.8"></div>
+      <div class="chart-lbl">${d.slice(2)}</div>
+    </div>`).join('')
+
+  sl.innerHTML=STUDENTS.map(s=>`
+    <div class="student-row" onclick="toast('${s.name}さんの詳細ページ（実際のアプリで表示）','👤')">
+      <div class="student-avatar" style="background:${MOOD_BG[s.mood]}">${s.avatar}</div>
+      <div style="flex:1">
+        <div style="font-size:.85rem;font-weight:700;color:var(--gray-900);display:flex;align-items:center;gap:6px">
+          ${s.name}
+          ${s.alert?'<span class="badge badge-red">要注意</span>':''}
+        </div>
+        <div style="font-size:.72rem;color:var(--gray-400);margin-top:2px">
+          気分: ${MOOD_EMOJI[s.mood]} ${MOOD_LABEL[s.mood]}　連続: ${s.streak}日
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:.72rem;font-weight:700;color:${s.done?'var(--green-600)':'var(--red-600)'}">
+          ${s.done?'✅ 提出済':'❌ 未提出'}
+        </div>
+      </div>
+    </div>`).join('')
+}
+
+// ════════════════════════════
+// ALERTS
+// ════════════════════════════
+let alertFilter='all'
+function renderAlerts(){
+  const lvBtns=document.getElementById('alert-level-btns')
+  const list=document.getElementById('alert-list')
+  if(!lvBtns||!list)return
+
+  const LEVEL_CONFIG={
+    critical:{label:'緊急',emoji:'🔴',color:'#DC2626',bg:'#FEE2E2'},
+    high:    {label:'高',  emoji:'🟠',color:'#EA580C',bg:'#FFEDD5'},
+    medium:  {label:'中',  emoji:'🟡',color:'#D97706',bg:'#FEF3C7'},
+    low:     {label:'低',  emoji:'🟢',color:'#059669',bg:'#D1FAE5'},
+  }
+  const counts={critical:0,high:0,medium:0,low:0}
+  ALERTS.forEach(a=>counts[a.level]++)
+
+  lvBtns.innerHTML=Object.entries(LEVEL_CONFIG).map(([lv,c])=>`
+    <button onclick="alertFilter='${lv}';renderAlerts()"
+      style="border:1px solid ${c.color}40;background:${c.bg};color:${c.color};
+             border-radius:12px;padding:8px 12px;text-align:center;cursor:pointer;
+             flex:1;min-width:60px;opacity:${alertFilter===lv?1:.6};font-family:inherit;transition:all .15s">
+      <div style="font-size:1.3rem;font-weight:900">${counts[lv]}</div>
+      <div style="font-size:.68rem;font-weight:700">${c.emoji} ${c.label}</div>
+    </button>`).join('')
+
+  const shown=alertFilter==='all'?ALERTS:ALERTS.filter(a=>a.level===alertFilter)
+  list.innerHTML=shown.map((a,i)=>`
+    <div class="alert-card" style="background:${a.resolved?'#F8FAFC':a.bg};border-color:${a.resolved?'#E5E7EB':a.border};opacity:${a.resolved?.55:1}">
+      <div style="display:flex;align-items:flex-start;gap:14px">
+        <div style="font-size:1.8rem">${a.resolved?'✅':a.emoji}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+            <span style="font-weight:800;color:var(--gray-900)">${a.name}</span>
+            <span class="badge" style="background:${a.bg};color:${a.color}">${a.emoji} ${LEVEL_CONFIG[a.level].label}</span>
+            <span class="badge badge-gray">${a.type}</span>
+            ${a.resolved?'<span class="badge badge-green">解決済み</span>':''}
+            <span style="margin-left:auto;font-size:.7rem;color:var(--gray-400)">${a.date}</span>
+          </div>
+          <div style="font-size:.83rem;color:var(--gray-700);line-height:1.7">${a.msg}</div>
+        </div>
+        ${!a.resolved?`<button class="btn btn-green btn-sm" style="flex-shrink:0" onclick="resolveAlert(${i})">解決済み</button>`:''}
+      </div>
+    </div>`).join('')
+}
+
+function resolveAlert(i){
+  ALERTS[i].resolved=true
+  renderAlerts()
+  toast('対応済みとしてマークしました（体験版）','✅')
+}
+
+// ════════════════════════════
+// INIT
+// ════════════════════════════
+renderDashboard()
+</script>
+</body>
+</html>
